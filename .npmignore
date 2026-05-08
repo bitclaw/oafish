@@ -1,0 +1,7 @@
+.idea/
+hooks/src/
+tsconfig.json
+bun.lock
+*.lock
+.env
+.env.local
