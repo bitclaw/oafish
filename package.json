@@ -1,0 +1,16 @@
+{
+  "name": "terse",
+  "version": "0.1.0",
+  "description": "Output compression for AI coding agents",
+  "type": "module",
+  "scripts": {
+    "build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts --outdir hooks/dist --target node --format cjs",
+    "dev:activate": "bun run hooks/src/activate.ts",
+    "dev:tracker": "bun run hooks/src/tracker.ts",
+    "dev:compress": "bun run hooks/src/compress.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  }
+}

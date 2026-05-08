@@ -1,0 +1,27 @@
+#!/bin/bash
+# terse — statusline badge for Claude Code
+# Usage in settings.json:
+#   "statusLine": { "type": "command", "command": "bash /path/to/statusline" }
+
+TERSE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/terse"
+FLAG="$TERSE_CONFIG_DIR/.active"
+
+# Refuse symlinks — attacker could point flag at ~/.ssh/id_rsa
+[ -L "$FLAG" ] && exit 0
+[ ! -f "$FLAG" ] && exit 0
+
+# Cap read, strip non-alphanum-dash — blocks escape injection
+MODE=$(head -c 32 "$FLAG" 2>/dev/null | tr -d '\n\r' | tr '[:upper:]' '[:lower:]')
+MODE=$(printf '%s' "$MODE" | tr -cd 'a-z0-9-')
+
+case "$MODE" in
+  off|lite|full|ultra) ;;
+  *) exit 0 ;;
+esac
+
+if [ -z "$MODE" ] || [ "$MODE" = "full" ]; then
+  printf '\033[38;5;172m[TERSE]\033[0m'
+else
+  SUFFIX=$(printf '%s' "$MODE" | tr '[:lower:]' '[:upper:]')
+  printf '\033[38;5;172m[TERSE:%s]\033[0m' "$SUFFIX"
+fi

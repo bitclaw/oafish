@@ -1,0 +1,32 @@
+{
+  "name": "terse",
+  "version": "0.1.0",
+  "description": "Output compression for Claude Code. Cuts ~75% output tokens, keeps full accuracy.",
+  "author": "bitclaw",
+  "homepage": "https://terse.bitclaw.com",
+  "repository": "https://github.com/bitclaw/terse",
+  "license": "MIT",
+  "skills": [
+    "./skills/terse"
+  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/activate.js\""
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/tracker.js\""
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/compress.js\""
+      }
+    ]
+  }
+}
