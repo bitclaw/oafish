@@ -61,6 +61,7 @@ def load_env() -> None:
     env_file = ROOT / ".env.local"
     if env_file.exists():
         from dotenv import load_dotenv
+
         load_dotenv(env_file)
 
 
@@ -114,7 +115,7 @@ def call_api(client, model: str, system: str, prompt: str, dry_run: bool) -> dic
         except Exception as e:
             if attempt == 2:
                 raise
-            wait = 5 * (2 ** attempt)
+            wait = 5 * (2**attempt)
             print(f"    retry {attempt + 1}/3 after {wait}s ({e})", file=sys.stderr)
             time.sleep(wait)
     raise RuntimeError("unreachable")
@@ -126,7 +127,7 @@ def median(vals: list[int]) -> float:
 
 def run_benchmark(args: argparse.Namespace) -> dict:
     if not args.dry_run:
-        import anthropic  # noqa: PLC0415
+        import anthropic
 
     prompts = json.loads(PROMPTS_FILE.read_text())
     skill_sha = hashlib.sha256(SKILL_FILE.read_text().encode()).hexdigest()[:12]
@@ -214,9 +215,9 @@ def format_table(data: dict) -> str:
         full = f"{r['full_output']} ({r['full_savings_pct']:+.0f}%)"
         ultra = f"{r['ultra_output']} ({r['ultra_savings_pct']:+.0f}%)"
         # Negate to show as savings (positive = fewer tokens)
-        lite = f"{r['lite_output']} (−{r['lite_savings_pct']:.0f}%)"
-        full = f"{r['full_output']} (−{r['full_savings_pct']:.0f}%)"
-        ultra = f"{r['ultra_output']} (−{r['ultra_savings_pct']:.0f}%)"
+        lite = f"{r['lite_output']} (-{r['lite_savings_pct']:.0f}%)"
+        full = f"{r['full_output']} (-{r['full_savings_pct']:.0f}%)"
+        ultra = f"{r['ultra_output']} (-{r['ultra_savings_pct']:.0f}%)"
         lines.append(f"| {r['id']} | {b} | {lite} | {full} | {ultra} |")
 
     lines += [
@@ -229,8 +230,8 @@ def format_table(data: dict) -> str:
     for mode in ["lite", "full", "ultra"]:
         s = summary[mode]
         lines.append(
-            f"| {mode} | −{s['avg_savings_pct']}% | −{s['median_savings_pct']}% "
-            f"| −{s['min_savings_pct']}% | −{s['max_savings_pct']}% |"
+            f"| {mode} | -{s['avg_savings_pct']}% | -{s['median_savings_pct']}% "
+            f"| -{s['min_savings_pct']}% | -{s['max_savings_pct']}% |"
         )
     return "\n".join(lines)
 
@@ -245,7 +246,7 @@ def update_readme(table: str) -> None:
         )
         return
     before = text[: text.index(README_START) + len(README_START)]
-    after = text[text.index(README_END):]
+    after = text[text.index(README_END) :]
     README_FILE.write_text(f"{before}\n\n{table}\n\n{after}")
     print(f"  Updated {README_FILE.name}")
 
@@ -262,6 +263,7 @@ def main() -> None:
 
     if not args.dry_run:
         import os
+
         if not os.environ.get("ANTHROPIC_API_KEY"):
             sys.exit("ANTHROPIC_API_KEY not set. Add to .env.local or export.")
 

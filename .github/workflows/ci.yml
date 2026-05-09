@@ -28,7 +28,22 @@ jobs:
         run: bun run typecheck
 
       - name: Lint + format (biome)
-        run: bun run check
+        run: bun run lint
+
+  lint-python:
+    name: Ruff lint + format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Ruff check
+        run: uvx ruff check benchmarks/
+
+      - name: Ruff format check
+        run: uvx ruff format --check benchmarks/
 
   benchmark-dry-run:
     name: Benchmark dry-run

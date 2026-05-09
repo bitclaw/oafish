@@ -53,12 +53,16 @@ bash dev-install --uninstall
 ## Quality checks
 
 ```bash
-bun run build      # compile TypeScript → hooks/dist/
-bun run typecheck  # type-check without emitting
-bun run check      # biome lint + format
+make ci          # build + typecheck + lint (all at once)
+make lint        # lint TypeScript + Python (report only)
+make fix         # auto-fix TypeScript + Python in place
+make build       # compile TypeScript → hooks/dist/
+make typecheck   # TypeScript type-check only
+make lint.ts     # biome only
+make lint.py     # ruff only
 ```
 
-All three must pass before opening a PR.
+All checks must pass (`make ci`) before opening a PR.
 
 ---
 
