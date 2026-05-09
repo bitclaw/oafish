@@ -10,6 +10,8 @@
 		"./skills/oafish",
 		"./skills/oafish-commit",
 		"./skills/oafish-stats",
+		"./skills/oafish-review",
+		"./skills/oafish-help",
 		"./skills/oafish-index",
 		"./skills/oafish-crew"
 	],
