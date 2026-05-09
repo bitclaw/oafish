@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# dev-install — register local oafish repo as a Claude Code plugin
+# Run once after cloning. Re-run after hook changes (with bun run build first).
+# Usage:
+#   bash dev-install             # install
+#   bash dev-install --uninstall # remove dev plugin entry
+
+set -euo pipefail
+
+PLUGIN_KEY="oafish@oafish"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+PLUGINS_JSON="$CLAUDE_DIR/plugins/installed_plugins.json"
+SETTINGS_JSON="$CLAUDE_DIR/settings.json"
+
+# ── helpers ───────────────────────────────────────────────────────────────
+
+ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
+info() { printf '  \033[34m→\033[0m %s\n' "$*"; }
+err()  { printf '  \033[31m✗\033[0m %s\n' "$*" >&2; exit 1; }
+
+require_python() {
+  command -v python3 &>/dev/null || err "python3 required"
+}
+
+# ── uninstall ─────────────────────────────────────────────────────────────
+
+uninstall() {
+  require_python
+
+  if [[ ! -f "$PLUGINS_JSON" ]]; then
+    info "No installed_plugins.json found — nothing to remove."
+    exit 0
+  fi
+
+  python3 - "$PLUGINS_JSON" "$PLUGIN_KEY" <<'EOF'
+import sys, json
+path, key = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = json.load(f)
+plugins = data.get("plugins", {})
+if key in plugins:
+    plugins[key] = [p for p in plugins[key] if p.get("version") != "local"]
+    if not plugins[key]:
+        del plugins[key]
+data["plugins"] = plugins
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+
+  # Remove enabledPlugins entry from settings.json
+  if [[ -f "$SETTINGS_JSON" ]]; then
+    python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" <<'EOF'
+import sys, json
+path, key = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = json.load(f)
+enabled = data.get("enabledPlugins", {})
+enabled.pop(key, None)
+if enabled:
+    data["enabledPlugins"] = enabled
+else:
+    data.pop("enabledPlugins", None)
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+  fi
+
+  ok "Removed dev plugin. Restart Claude Code."
+  exit 0
+}
+
+# ── flags ─────────────────────────────────────────────────────────────────
+
+for arg in "$@"; do
+  case "$arg" in
+    --uninstall|-u) uninstall ;;
+    --help|-h)
+      echo "Usage: bash dev-install [--uninstall]"
+      exit 0
+      ;;
+    *) err "Unknown flag: $arg" ;;
+  esac
+done
+
+# ── pre-checks ────────────────────────────────────────────────────────────
+
+require_python
+
+[[ -f "$REPO_ROOT/.claude-plugin/plugin.json" ]] \
+  || err "Not an oafish repo root: $REPO_ROOT"
+
+[[ -f "$REPO_ROOT/hooks/dist/activate.js" ]] \
+  || err "Build missing. Run: bun run build"
+
+[[ -d "$CLAUDE_DIR" ]] \
+  || err "Claude Code config dir not found: $CLAUDE_DIR"
+
+mkdir -p "$CLAUDE_DIR/plugins"
+
+# ── installed_plugins.json ────────────────────────────────────────────────
+
+NOW="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+
+python3 - "$PLUGINS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" "$NOW" <<'EOF'
+import sys, json, os
+path, key, repo_root, now = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+else:
+    data = {"version": 2, "plugins": {}}
+
+entry = {
+    "scope": "user",
+    "installPath": repo_root,
+    "version": "local",
+    "installedAt": now,
+    "lastUpdated": now,
+    "gitCommitSha": "local"
+}
+
+plugins = data.setdefault("plugins", {})
+existing = plugins.get(key, [])
+# Remove any existing local entry, keep remote entries
+existing = [p for p in existing if p.get("version") != "local"]
+existing.insert(0, entry)  # local takes precedence (first entry wins)
+plugins[key] = existing
+data["plugins"] = plugins
+
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+
+ok "Registered in installed_plugins.json"
+
+# ── settings.json ─────────────────────────────────────────────────────────
+
+if [[ ! -f "$SETTINGS_JSON" ]]; then
+  echo '{}' > "$SETTINGS_JSON"
+fi
+
+python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" <<'EOF'
+import sys, json
+path, key = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = json.load(f)
+data.setdefault("enabledPlugins", {})[key] = True
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+
+ok "Enabled in settings.json"
+
+# ── done ─────────────────────────────────────────────────────────────────
+
+echo ""
+echo "  Plugin: $PLUGIN_KEY"
+echo "  Path:   $REPO_ROOT"
+echo ""
+info "Restart Claude Code to activate."
+info "Verify with: /oafish-help"
