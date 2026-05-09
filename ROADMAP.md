@@ -16,7 +16,7 @@
 
 - [x] **Input compression** (`oafish compress <file>`) — compress large files before feeding to agent context
 - [ ] **MCP server** — `mcp__oafish__shrink` tool strips whitespace/boilerplate from MCP tool descriptions before they hit the context window
-- [ ] **Session stats** — `/oafish stats` reports estimated tokens saved in current session
+- [x] **Session stats** — `/oafish stats` reports estimated tokens saved in current session
 - [ ] **Deactivation persistence** — remember `stop oafish` across sessions (write off flag vs. just deleting active flag)
 - [ ] **opencode native config** — write to opencode config directly, not just AGENTS.md
 - [ ] **Better Cline detection** — current detection relies on extension directory scan; use Cline config file if available

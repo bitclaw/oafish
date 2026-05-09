@@ -4,6 +4,7 @@
 
 import fs from "node:fs";
 import { getDefaultMode, getFlagPath, safeWriteFlag, readFlag, VALID_MODES, type Mode } from "./config.js";
+import { getStats } from "./stats.js";
 
 const flagPath = getFlagPath();
 
@@ -35,6 +36,21 @@ process.stdin.on("end", () => {
       /\bnormal mode\b/i.test(lower)
     ) {
       try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
+    }
+
+    // Slash command: /oafish stats [--all] [--share]
+    if (lower.startsWith("/oafish stats") || lower.startsWith("/oafish-stats")) {
+      const activeMode = readFlag(flagPath) ?? "full";
+      const statsArgs = lower.split(/\s+/);
+      const statsText = getStats({
+        transcriptPath: data.transcript_path as string | undefined,
+        sessionId: data.session_id as string | undefined,
+        mode: activeMode,
+        all: statsArgs.includes("--all"),
+        share: statsArgs.includes("--share"),
+      });
+      process.stdout.write(JSON.stringify({ decision: "block", reason: statsText }));
+      process.exit(0);
     }
 
     // Slash command: /oafish [lite|full|ultra|off]

@@ -8,7 +8,8 @@
     "dev:activate": "bun run hooks/src/activate.ts",
     "dev:tracker": "bun run hooks/src/tracker.ts",
     "dev:compress": "bun run hooks/src/compress.ts",
-    "dev:compress-file": "bun run hooks/src/compress-file.ts"
+    "dev:compress-file": "bun run hooks/src/compress-file.ts",
+    "dev:stats": "bun run hooks/src/stats.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.0"

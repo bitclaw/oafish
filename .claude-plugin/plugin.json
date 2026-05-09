@@ -8,7 +8,8 @@
   "license": "MIT",
   "skills": [
     "./skills/oafish",
-    "./skills/oafish-commit"
+    "./skills/oafish-commit",
+    "./skills/oafish-stats"
   ],
   "hooks": {
     "SessionStart": [
