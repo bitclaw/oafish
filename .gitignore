@@ -3,5 +3,5 @@ bun.lockb
 *.lock
 .env
 .env.local
-# dist JS committed so install needs no build step — see hooks/dist/
+hooks/dist/
 
