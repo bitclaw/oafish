@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # oafish — statusline badge for Claude Code
 # Usage in settings.json:
 #   "statusLine": { "type": "command", "command": "bash /path/to/statusline" }
