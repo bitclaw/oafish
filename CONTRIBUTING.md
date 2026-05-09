@@ -10,6 +10,8 @@
 
 uv manages Python automatically — `uv run` will download 3.14.4 if not present.
 
+Benchmarks require `ANTHROPIC_API_KEY` — set via `export` or `.env.local` in the project root.
+
 ---
 
 ## Local dev install (Claude Code)

@@ -82,6 +82,19 @@ For file-based agents (Cursor, Windsurf, etc.), the rules file is written direct
 
 ---
 
+## Benchmarks
+
+Benchmarks measure token reduction against a live model.
+
+```bash
+export ANTHROPIC_API_KEY=sk-...   # or add to .env.local
+uv run benchmarks/run.py
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites.
+
+---
+
 ## Build from source
 
 Requires [Bun](https://bun.sh).
