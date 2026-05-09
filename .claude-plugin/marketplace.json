@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "oafish",
+  "description": "Output compression for Claude Code. Cuts ~75% output tokens, keeps full accuracy.",
+  "owner": {
+    "name": "bitclaw",
+    "url": "https://github.com/bitclaw"
+  },
+  "plugins": [
+    {
+      "name": "oafish",
+      "description": "Output compression mode. Same answer, fewer tokens.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
