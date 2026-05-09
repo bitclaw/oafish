@@ -12,11 +12,12 @@ Usage:
     uv run python benchmarks/run.py --update-readme
 
 Requirements:
+    uv (https://docs.astral.sh/uv/) — handles Python 3.14.4+ automatically
     ANTHROPIC_API_KEY env var (or .env.local file)
 """
 
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.14.4"
 # dependencies = ["anthropic>=0.95.0", "python-dotenv"]
 # ///
 

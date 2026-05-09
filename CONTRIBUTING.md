@@ -1,5 +1,17 @@
 # Contributing to oafish
 
+## Prerequisites
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| [Bun](https://bun.sh) | latest | build + package manager |
+| [uv](https://docs.astral.sh/uv/) | latest | Python package manager for benchmarks |
+| Python | ≥3.14.4 | benchmark script |
+
+uv manages Python automatically — `uv run` will download 3.14.4 if not present.
+
+---
+
 ## Local dev install (Claude Code)
 
 Changes to hooks require a build step. Changes to skills (`SKILL.md` files) do not.

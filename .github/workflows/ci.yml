@@ -38,6 +38,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.14.4"
 
       - name: Benchmark dry-run (validates script + prompts parse)
-        run: uv run --with python-dotenv python benchmarks/run.py --dry-run
+        run: uv run python benchmarks/run.py --dry-run
