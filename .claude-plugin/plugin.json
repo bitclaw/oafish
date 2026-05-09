@@ -9,7 +9,9 @@
   "skills": [
     "./skills/oafish",
     "./skills/oafish-commit",
-    "./skills/oafish-stats"
+    "./skills/oafish-stats",
+    "./skills/oafish-index",
+    "./skills/oafish-crew"
   ],
   "hooks": {
     "SessionStart": [

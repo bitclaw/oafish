@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import { getDefaultMode, getFlagPath, safeWriteFlag } from "./config.js";
+import { getDefaultMode, getFlagPath, getOffFlagPath, safeWriteFlag, readFlag } from "./config.js";
 
 const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), ".claude");
 const settingsPath = path.join(claudeDir, "settings.json");
@@ -16,6 +16,13 @@ const mode = getDefaultMode();
 
 if (mode === "off") {
   try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
+  process.stdout.write("OK");
+  process.exit(0);
+}
+
+// Persistent deactivation: user ran "stop oafish" in a prior session
+const offFlag = readFlag(getOffFlagPath());
+if (offFlag === "off") {
   process.stdout.write("OK");
   process.exit(0);
 }

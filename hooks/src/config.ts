@@ -24,6 +24,10 @@ export function getFlagPath(): string {
   return path.join(getConfigDir(), ".active");
 }
 
+export function getOffFlagPath(): string {
+  return path.join(getConfigDir(), ".off");
+}
+
 export function getDefaultMode(): Mode {
   const env = process.env.OAFISH_DEFAULT_MODE?.toLowerCase();
   if (env && VALID_MODES.includes(env as Mode)) return env as Mode;

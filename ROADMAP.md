@@ -15,14 +15,17 @@
 ## v0.2 — next
 
 - [x] **Input compression** (`oafish compress <file>`) — compress large files before feeding to agent context
-- [ ] **MCP server** — `mcp__oafish__shrink` tool strips whitespace/boilerplate from MCP tool descriptions before they hit the context window
+- [x] **MCP server** (`oafish mcp-shrink`) — stdio proxy compresses MCP tool/prompt/resource descriptions before they hit the context window. Zero API calls, regex-only, ~1ms latency.
 - [x] **Session stats** — `/oafish stats` reports estimated tokens saved in current session
-- [ ] **Deactivation persistence** — remember `stop oafish` across sessions (write off flag vs. just deleting active flag)
+- [x] **Deactivation persistence** — `stop oafish` writes `.off` flag; survives session restart until user re-activates
+- [x] **Context monitor** — per-turn warning at 60%/80% context fill; auto-suggests /compact and /oafish ultra
 - [ ] **opencode native config** — write to opencode config directly, not just AGENTS.md
 - [ ] **Better Cline detection** — current detection relies on extension directory scan; use Cline config file if available
 
 ## v0.3 — later
 
+- [x] **CLAUDE.md indexer** (`/oafish-index`) — splits oversized CLAUDE.md into ≤200-line master index + domain subdocuments; reduces per-session input tokens permanently
+- [x] **oafish-crew** (`/oafish-crew`) — parallel subagents (investigator/builder/reviewer) in ultra mode; cuts subagent output tokens ~60%
 - [ ] **Windows installer** (PowerShell)
 - [ ] **`/oafish explain`** — show current mode + what rules are active
 - [ ] **Per-project config** — `.oafish` file in project root to set default mode without touching global settings

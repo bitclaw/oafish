@@ -3,10 +3,40 @@
 // Tracks mode switches, natural-language activation/deactivation, per-turn reinforcement
 
 import fs from "node:fs";
-import { getDefaultMode, getFlagPath, safeWriteFlag, readFlag, VALID_MODES, type Mode } from "./config.js";
+import { getDefaultMode, getFlagPath, getOffFlagPath, safeWriteFlag, readFlag, VALID_MODES, type Mode } from "./config.js";
 import { getStats } from "./stats.js";
 
 const flagPath = getFlagPath();
+const offFlagPath = getOffFlagPath();
+
+function activate(mode: Mode): void {
+  try { fs.unlinkSync(offFlagPath); } catch { /* ok */ }
+  safeWriteFlag(flagPath, mode);
+}
+
+function deactivate(): void {
+  try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
+  safeWriteFlag(offFlagPath, "off");
+}
+
+function monitorContext(transcriptPath: string | undefined, activeMode: string): string | null {
+  if (!transcriptPath) return null;
+  try {
+    const bytes = fs.statSync(transcriptPath).size;
+    // 4 bytes/token rough est; JSONL metadata overhead → 0.55 correction
+    const tokenEst = Math.round(bytes / 4 * 0.55);
+    const limit = 200_000;
+    const pct = tokenEst / limit;
+    if (pct >= 0.80) {
+      const extra = activeMode !== "ultra" ? " Switch /oafish ultra to extend session." : "";
+      return `[oafish] Context ~${Math.round(pct * 100)}% full (~${tokenEst.toLocaleString()} tokens). Run /compact now.${extra}`;
+    }
+    if (pct >= 0.60) {
+      return `[oafish] Context ~${Math.round(pct * 100)}% full (~${tokenEst.toLocaleString()} tokens). Consider /compact soon.`;
+    }
+  } catch { /* silent */ }
+  return null;
+}
 
 let input = "";
 process.stdin.on("data", (chunk: Buffer) => { input += chunk; });
@@ -25,7 +55,7 @@ process.stdin.on("end", () => {
     ) {
       if (!/\b(stop|disable|turn off|deactivate)\b/i.test(prompt)) {
         const mode = getDefaultMode();
-        if (mode !== "off") safeWriteFlag(flagPath, mode);
+        if (mode !== "off") activate(mode);
       }
     }
 
@@ -35,7 +65,7 @@ process.stdin.on("end", () => {
       /\boafish\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) ||
       /\bnormal mode\b/i.test(lower)
     ) {
-      try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
+      deactivate();
     }
 
     // Slash command: /oafish stats [--all] [--share]
@@ -59,25 +89,27 @@ process.stdin.on("end", () => {
       const arg = parts[1] || "";
 
       if (arg === "off" || arg === "stop" || arg === "disable") {
-        try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
+        deactivate();
       } else if (VALID_MODES.includes(arg as Mode) && arg !== "off") {
-        safeWriteFlag(flagPath, arg as Mode);
+        activate(arg as Mode);
       } else if (!arg) {
         const mode = getDefaultMode();
-        if (mode !== "off") safeWriteFlag(flagPath, mode);
+        if (mode !== "off") activate(mode);
       }
     }
 
     // Per-turn reinforcement — keeps oafish active when other plugins inject competing instructions
     const activeMode = readFlag(flagPath);
     if (activeMode && activeMode !== "off") {
+      const contextWarn = monitorContext(data.transcript_path as string | undefined, activeMode);
+      const reinforcement =
+        `OAFISH MODE ACTIVE (${activeMode}). ` +
+        `Drop articles/filler/pleasantries/hedging. Fragments OK. ` +
+        `Code/commits/security: write normal.`;
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "UserPromptSubmit",
-          additionalContext:
-            `OAFISH MODE ACTIVE (${activeMode}). ` +
-            `Drop articles/filler/pleasantries/hedging. Fragments OK. ` +
-            `Code/commits/security: write normal.`
+          additionalContext: contextWarn ? `${reinforcement}\n${contextWarn}` : reinforcement
         }
       }));
     }

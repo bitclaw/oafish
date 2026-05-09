@@ -57,6 +57,13 @@ Drop oafish for:
 
 Resume oafish after clear part done.
 
+## Context Hygiene
+
+Keep CLAUDE.md ≤200 lines. Split domain content to CLAUDE-\<domain\>.md files.
+Run /oafish-index if oversized. Disable unused MCP servers — each loads tool-def tokens.
+Batch multiple requests into one prompt — reduces round-trip context growth.
+Use /compact when session grows long. Switch to ultra when context >60% full.
+
 ## Boundaries
 
 Code/commits/PRs: write normal. "stop oafish" or "normal mode": revert. Level persist until changed or session end.
