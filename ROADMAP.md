@@ -10,10 +10,11 @@
 - [x] Skills-based agents: Codex, Roo, Amp, Goose
 - [x] Statusline badge
 - [x] Bun + TypeScript source, compiled JS committed for zero-dep install
+- [x] `oafish-commit` skill — Seven Rules commit message generator, no AI attribution
 
 ## v0.2 — next
 
-- [ ] **Input compression** (`oafish compress <file>`) — compress large files before feeding to agent context
+- [x] **Input compression** (`oafish compress <file>`) — compress large files before feeding to agent context
 - [ ] **MCP server** — `mcp__oafish__shrink` tool strips whitespace/boilerplate from MCP tool descriptions before they hit the context window
 - [ ] **Session stats** — `/oafish stats` reports estimated tokens saved in current session
 - [ ] **Deactivation persistence** — remember `stop oafish` across sessions (write off flag vs. just deleting active flag)

@@ -4,10 +4,14 @@
   "description": "Output compression for AI coding agents",
   "type": "module",
   "scripts": {
-    "build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts --outdir hooks/dist --target node --format cjs",
+    "build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts hooks/src/compress-file.ts --outdir hooks/dist --target node --format cjs",
     "dev:activate": "bun run hooks/src/activate.ts",
     "dev:tracker": "bun run hooks/src/tracker.ts",
-    "dev:compress": "bun run hooks/src/compress.ts"
+    "dev:compress": "bun run hooks/src/compress.ts",
+    "dev:compress-file": "bun run hooks/src/compress-file.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
