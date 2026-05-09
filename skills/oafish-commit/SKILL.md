@@ -24,10 +24,21 @@ Generate commit message from current branch changes. Output text only.
 6. Wrap body at 72 characters
 7. Body explains *what* and *why*, not how
 
+## Type Prefix (optional)
+
+Prefix subject with `type: ` when it adds signal not obvious from the subject alone.
+
+Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
+
+Use it: `feat: Add profile endpoint for mobile client`
+Skip it: `Update README` — type is obvious, prefix is noise
+
 ## Additional Rules
 
 - Be concise — no repetition or verbosity
 - Reflect only work done on current branch
+- Bullets in body: `-` not `*`
+- Issue/PR refs at end of body: `Closes #42`, `Refs #17`
 - Output commit message text only — never run git commit or push
 
 ## What NEVER goes in
@@ -36,6 +47,10 @@ Generate commit message from current branch changes. Output text only.
 - Any tool or agent name (opencode, Cursor, Windsurf, Cline, Copilot, Gemini, etc.)
 - "This commit does X", "I", "we", "now", "currently" — diff says what
 - Emoji (unless project already uses them)
+
+## Auto-Clarity
+
+Always include body for: breaking changes, security fixes, data migrations, reverts. Never compress these into subject-only — future debuggers need the context.
 
 ## Examples
 
@@ -46,7 +61,7 @@ Fix null pointer in user auth middleware
 
 New feature with why:
 ```
-Add profile endpoint for mobile client
+feat: Add profile endpoint for mobile client
 
 Mobile cold-launch needs profile data without full user
 payload to reduce LTE bandwidth. Full user endpoint stays.
@@ -56,7 +71,7 @@ Closes #128
 
 Breaking change:
 ```
-Rename /v1/orders to /v1/checkout
+feat: Rename /v1/orders to /v1/checkout
 
 BREAKING CHANGE: clients on /v1/orders must migrate before
 2026-06-01. Old route returns 410 after that date.
