@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// terse — UserPromptSubmit hook
+// oafish — UserPromptSubmit hook
 // Tracks mode switches, natural-language activation/deactivation, per-turn reinforcement
 
 import fs from "node:fs";
@@ -17,8 +17,8 @@ process.stdin.on("end", () => {
 
     // Natural-language activation
     if (
-      /\b(activate|enable|turn on|start|use)\b.*\bterse\b/i.test(prompt) ||
-      /\bterse\b.*\b(mode|on|activate|enable)\b/i.test(prompt) ||
+      /\b(activate|enable|turn on|start|use)\b.*\boafish\b/i.test(prompt) ||
+      /\boafish\b.*\b(mode|on|activate|enable)\b/i.test(prompt) ||
       /\bless tokens\b/i.test(prompt) ||
       /\bbe brief\b/i.test(prompt)
     ) {
@@ -30,15 +30,15 @@ process.stdin.on("end", () => {
 
     // Natural-language deactivation
     if (
-      /\b(stop|disable|deactivate|turn off)\b.*\bterse\b/i.test(prompt) ||
-      /\bterse\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) ||
+      /\b(stop|disable|deactivate|turn off)\b.*\boafish\b/i.test(prompt) ||
+      /\boafish\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) ||
       /\bnormal mode\b/i.test(lower)
     ) {
       try { fs.unlinkSync(flagPath); } catch { /* already gone */ }
     }
 
-    // Slash command: /terse [lite|full|ultra|off]
-    if (lower.startsWith("/terse")) {
+    // Slash command: /oafish [lite|full|ultra|off]
+    if (lower.startsWith("/oafish")) {
       const parts = lower.split(/\s+/);
       const arg = parts[1] || "";
 
@@ -52,14 +52,14 @@ process.stdin.on("end", () => {
       }
     }
 
-    // Per-turn reinforcement — keeps terse active when other plugins inject competing instructions
+    // Per-turn reinforcement — keeps oafish active when other plugins inject competing instructions
     const activeMode = readFlag(flagPath);
     if (activeMode && activeMode !== "off") {
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "UserPromptSubmit",
           additionalContext:
-            `TERSE MODE ACTIVE (${activeMode}). ` +
+            `OAFISH MODE ACTIVE (${activeMode}). ` +
             `Drop articles/filler/pleasantries/hedging. Fragments OK. ` +
             `Code/commits/security: write normal.`
         }

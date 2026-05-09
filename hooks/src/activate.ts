@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// terse — SessionStart hook
+// oafish — SessionStart hook
 // 1. Writes active mode flag
-// 2. Injects terse ruleset as session context
+// 2. Injects oafish ruleset as session context
 // 3. Nudges statusline setup if missing
 
 import fs from "node:fs";
@@ -23,11 +23,11 @@ if (mode === "off") {
 safeWriteFlag(flagPath, mode);
 
 // Read SKILL.md — single source of truth.
-// Plugin installs: __dirname = <plugin_root>/hooks/dist/, SKILL.md at <plugin_root>/skills/terse/SKILL.md
+// Plugin installs: __dirname = <plugin_root>/hooks/dist/, SKILL.md at <plugin_root>/skills/oafish/SKILL.md
 let skillContent = "";
 try {
   skillContent = fs.readFileSync(
-    path.join(__dirname, "..", "..", "skills", "terse", "SKILL.md"),
+    path.join(__dirname, "..", "..", "skills", "oafish", "SKILL.md"),
     "utf8"
   );
 } catch { /* standalone — use fallback */ }
@@ -53,16 +53,16 @@ if (skillContent) {
     return acc;
   }, []);
 
-  output = `TERSE MODE ACTIVE — level: ${mode}\n\n${filtered.join("\n")}`;
+  output = `OAFISH MODE ACTIVE — level: ${mode}\n\n${filtered.join("\n")}`;
 } else {
   output =
-    `TERSE MODE ACTIVE — level: ${mode}\n\n` +
+    `OAFISH MODE ACTIVE — level: ${mode}\n\n` +
     `Respond concise. Drop fluff. Keep full technical accuracy.\n\n` +
     `Drop: articles, filler (just/really/basically/simply), pleasantries, hedging. ` +
     `Fragments OK. Short synonyms. Technical terms exact. Code unchanged.\n\n` +
     `Pattern: [thing] [action] [reason]. [next step].\n\n` +
-    `Auto-clarity: drop terse for security warnings, irreversible ops, ambiguous sequences. Resume after.\n\n` +
-    `"stop terse" or "normal mode" to revert. Level: ${mode}. Switch: /terse lite|full|ultra.`;
+    `Auto-clarity: drop oafish for security warnings, irreversible ops, ambiguous sequences. Resume after.\n\n` +
+    `"stop oafish" or "normal mode" to revert. Level: ${mode}. Switch: /oafish lite|full|ultra.`;
 }
 
 // Nudge statusline setup if not configured
@@ -77,7 +77,7 @@ try {
     const cmd = `bash "${scriptPath}"`;
     const snippet = `"statusLine": { "type": "command", "command": ${JSON.stringify(cmd)} }`;
     output +=
-      `\n\nSTATUSLINE SETUP NEEDED: terse includes a statusline badge ([TERSE], [TERSE:ULTRA]). ` +
+      `\n\nSTATUSLINE SETUP NEEDED: oafish includes a statusline badge ([OAFISH], [OAFISH:ULTRA]). ` +
       `Not configured yet. Add to ${settingsPath}: ${snippet}. ` +
       `Offer to set this up for user on first interaction.`;
   }

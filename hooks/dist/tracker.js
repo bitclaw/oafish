@@ -27,18 +27,18 @@ var VALID_MODES = ["off", "lite", "full", "ultra"];
 var MAX_FLAG_BYTES = 32;
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
-    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "terse");
+    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "oafish");
   }
   if (process.platform === "win32") {
-    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "terse");
+    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "oafish");
   }
-  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "terse");
+  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "oafish");
 }
 function getFlagPath() {
   return import_node_path.default.join(getConfigDir(), ".active");
 }
 function getDefaultMode() {
-  const env = process.env.TERSE_DEFAULT_MODE?.toLowerCase();
+  const env = process.env.OAFISH_DEFAULT_MODE?.toLowerCase();
   if (env && VALID_MODES.includes(env))
     return env;
   try {
@@ -50,7 +50,7 @@ function getDefaultMode() {
   return "full";
 }
 function safeWriteFlag(flagPath, content) {
-  const debug = process.env.TERSE_DEBUG === "1";
+  const debug = process.env.OAFISH_DEBUG === "1";
   try {
     const flagDir = import_node_path.default.dirname(flagPath);
     import_node_fs.default.mkdirSync(flagDir, { recursive: true });
@@ -65,7 +65,7 @@ function safeWriteFlag(flagPath, content) {
         if (typeof process.getuid === "function") {
           if (realStat.uid !== process.getuid()) {
             if (debug)
-              process.stderr.write(`[terse] safeWriteFlag: symlink target owned by uid ${realStat.uid}
+              process.stderr.write(`[oafish] safeWriteFlag: symlink target owned by uid ${realStat.uid}
 `);
             return;
           }
@@ -89,7 +89,7 @@ function safeWriteFlag(flagPath, content) {
       if (e.code !== "ENOENT")
         return;
     }
-    const tempPath = import_node_path.default.join(realFlagDir, `.terse-active.${process.pid}.${Date.now()}`);
+    const tempPath = import_node_path.default.join(realFlagDir, `.oafish-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = import_node_fs.default.constants.O_NOFOLLOW ?? 0;
     const openFlags = import_node_fs.default.constants.O_WRONLY | import_node_fs.default.constants.O_CREAT | import_node_fs.default.constants.O_EXCL | O_NOFOLLOW;
     let fd;
@@ -151,19 +151,19 @@ process.stdin.on("end", () => {
     const data = JSON.parse(input);
     const prompt = (data.prompt || "").trim();
     const lower = prompt.toLowerCase();
-    if (/\b(activate|enable|turn on|start|use)\b.*\bterse\b/i.test(prompt) || /\bterse\b.*\b(mode|on|activate|enable)\b/i.test(prompt) || /\bless tokens\b/i.test(prompt) || /\bbe brief\b/i.test(prompt)) {
+    if (/\b(activate|enable|turn on|start|use)\b.*\boafish\b/i.test(prompt) || /\boafish\b.*\b(mode|on|activate|enable)\b/i.test(prompt) || /\bless tokens\b/i.test(prompt) || /\bbe brief\b/i.test(prompt)) {
       if (!/\b(stop|disable|turn off|deactivate)\b/i.test(prompt)) {
         const mode = getDefaultMode();
         if (mode !== "off")
           safeWriteFlag(flagPath, mode);
       }
     }
-    if (/\b(stop|disable|deactivate|turn off)\b.*\bterse\b/i.test(prompt) || /\bterse\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) || /\bnormal mode\b/i.test(lower)) {
+    if (/\b(stop|disable|deactivate|turn off)\b.*\boafish\b/i.test(prompt) || /\boafish\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) || /\bnormal mode\b/i.test(lower)) {
       try {
         import_node_fs2.default.unlinkSync(flagPath);
       } catch {}
     }
-    if (lower.startsWith("/terse")) {
+    if (lower.startsWith("/oafish")) {
       const parts = lower.split(/\s+/);
       const arg = parts[1] || "";
       if (arg === "off" || arg === "stop" || arg === "disable") {
@@ -183,7 +183,7 @@ process.stdin.on("end", () => {
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "UserPromptSubmit",
-          additionalContext: `TERSE MODE ACTIVE (${activeMode}). ` + `Drop articles/filler/pleasantries/hedging. Fragments OK. ` + `Code/commits/security: write normal.`
+          additionalContext: `OAFISH MODE ACTIVE (${activeMode}). ` + `Drop articles/filler/pleasantries/hedging. Fragments OK. ` + `Code/commits/security: write normal.`
         }
       }));
     }

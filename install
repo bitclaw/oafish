@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# terse installer — detects agents, runs the right install path
-# Usage: curl -fsSL https://terse.bitclaw.com/install | bash
+# oafish installer — detects agents, runs the right install path
+# Usage: curl -fsSL https://oafish.bitclaw.com/install | bash
 #        bash install [--dry-run] [--only <agent>] [--minimal]
 
 set -euo pipefail
 
-REPO="bitclaw/terse"
+REPO="bitclaw/oafish"
 DRY_RUN=0
 MINIMAL=0
 ONLY=()
@@ -66,12 +66,12 @@ detect() {
   return 1
 }
 
-# Write terse rules to a file-based agent path
+# Write oafish rules to a file-based agent path
 write_rules() {
   local label="$1"
   local dest="$2"
   local content
-  content="$(cat "$SCRIPT_DIR/rules/terse.md" 2>/dev/null || echo "# terse — see https://github.com/$REPO")"
+  content="$(cat "$SCRIPT_DIR/rules/oafish.md" 2>/dev/null || echo "# oafish — see https://github.com/$REPO")"
 
   say "$label → $dest"
   if [[ $DRY_RUN -eq 0 ]]; then
@@ -97,14 +97,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALLED=()
 
 echo ""
-echo "  🔇 terse — output compression installer"
+echo "  🔇 oafish — output compression installer"
 echo ""
 
 # ── Path 1: Claude Code ───────────────────────────────────────────────────
 if want claude && detect "command:claude"; then
   say "Claude Code detected"
   try claude plugin marketplace add "$REPO" && \
-  try claude plugin install terse@terse && \
+  try claude plugin install oafish@oafish && \
   ok "Claude Code plugin installed"
   INSTALLED+=(claude)
 
@@ -147,7 +147,7 @@ fi
 
 # Cursor
 if want cursor && detect "command:cursor||dir:$HOME/.cursor"; then
-  write_rules "Cursor" ".cursor/rules/terse.md"
+  write_rules "Cursor" ".cursor/rules/oafish.md"
   INSTALLED+=(cursor)
 elif want cursor; then
   skip "Cursor not found"
@@ -155,7 +155,7 @@ fi
 
 # Windsurf
 if want windsurf && detect "command:windsurf||dir:$HOME/.codeium/windsurf||dir:$HOME/.windsurf"; then
-  write_rules "Windsurf" ".windsurf/rules/terse.md"
+  write_rules "Windsurf" ".windsurf/rules/oafish.md"
   INSTALLED+=(windsurf)
 elif want windsurf; then
   skip "Windsurf not found"
@@ -165,7 +165,7 @@ fi
 if want cline && detect "dir:$HOME/.vscode/extensions||dir:$HOME/.cursor/extensions"; then
   if find "${HOME}/.vscode/extensions" "${HOME}/.cursor/extensions" \
      -maxdepth 1 -name "saoudrizwan.claude-dev*" 2>/dev/null | grep -q .; then
-    write_rules "Cline" ".clinerules/terse.md"
+    write_rules "Cline" ".clinerules/oafish.md"
     INSTALLED+=(cline)
   elif want cline; then
     skip "Cline not found"
@@ -231,16 +231,16 @@ echo ""
 if [[ ${#INSTALLED[@]} -eq 0 ]]; then
   err "No agents detected. Install Claude Code, Cursor, Windsurf, opencode, or another agent first."
   echo ""
-  echo "  Manual: copy rules/terse.md to your agent's rules directory."
-  echo "  Docs:   https://terse.bitclaw.com"
+  echo "  Manual: copy rules/oafish.md to your agent's rules directory."
+  echo "  Docs:   https://oafish.bitclaw.com"
   echo ""
   exit 1
 fi
 
 echo "  Installed for: ${INSTALLED[*]}"
 echo ""
-echo "  Usage: /terse          activate"
-echo "         /terse lite     low compression"
-echo "         /terse ultra    maximum compression"
-echo "         stop terse      deactivate"
+echo "  Usage: /oafish          activate"
+echo "         /oafish lite     low compression"
+echo "         /oafish ultra    maximum compression"
+echo "         stop oafish      deactivate"
 echo ""

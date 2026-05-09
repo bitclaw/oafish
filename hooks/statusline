@@ -1,10 +1,10 @@
 #!/bin/bash
-# terse — statusline badge for Claude Code
+# oafish — statusline badge for Claude Code
 # Usage in settings.json:
 #   "statusLine": { "type": "command", "command": "bash /path/to/statusline" }
 
-TERSE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/terse"
-FLAG="$TERSE_CONFIG_DIR/.active"
+OAFISH_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/oafish"
+FLAG="$OAFISH_CONFIG_DIR/.active"
 
 # Refuse symlinks — attacker could point flag at ~/.ssh/id_rsa
 [ -L "$FLAG" ] && exit 0
@@ -20,8 +20,8 @@ case "$MODE" in
 esac
 
 if [ -z "$MODE" ] || [ "$MODE" = "full" ]; then
-  printf '\033[38;5;172m[TERSE]\033[0m'
+  printf '\033[38;5;172m[OAFISH]\033[0m'
 else
   SUFFIX=$(printf '%s' "$MODE" | tr '[:lower:]' '[:upper:]')
-  printf '\033[38;5;172m[TERSE:%s]\033[0m' "$SUFFIX"
+  printf '\033[38;5;172m[OAFISH:%s]\033[0m' "$SUFFIX"
 fi

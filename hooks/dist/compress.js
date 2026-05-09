@@ -24,18 +24,18 @@ var VALID_MODES = ["off", "lite", "full", "ultra"];
 var MAX_FLAG_BYTES = 32;
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
-    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "terse");
+    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "oafish");
   }
   if (process.platform === "win32") {
-    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "terse");
+    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "oafish");
   }
-  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "terse");
+  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "oafish");
 }
 function getFlagPath() {
   return import_node_path.default.join(getConfigDir(), ".active");
 }
 function getDefaultMode() {
-  const env = process.env.TERSE_DEFAULT_MODE?.toLowerCase();
+  const env = process.env.OAFISH_DEFAULT_MODE?.toLowerCase();
   if (env && VALID_MODES.includes(env))
     return env;
   try {
@@ -47,7 +47,7 @@ function getDefaultMode() {
   return "full";
 }
 function safeWriteFlag(flagPath, content) {
-  const debug = process.env.TERSE_DEBUG === "1";
+  const debug = process.env.OAFISH_DEBUG === "1";
   try {
     const flagDir = import_node_path.default.dirname(flagPath);
     import_node_fs.default.mkdirSync(flagDir, { recursive: true });
@@ -62,7 +62,7 @@ function safeWriteFlag(flagPath, content) {
         if (typeof process.getuid === "function") {
           if (realStat.uid !== process.getuid()) {
             if (debug)
-              process.stderr.write(`[terse] safeWriteFlag: symlink target owned by uid ${realStat.uid}
+              process.stderr.write(`[oafish] safeWriteFlag: symlink target owned by uid ${realStat.uid}
 `);
             return;
           }
@@ -86,7 +86,7 @@ function safeWriteFlag(flagPath, content) {
       if (e.code !== "ENOENT")
         return;
     }
-    const tempPath = import_node_path.default.join(realFlagDir, `.terse-active.${process.pid}.${Date.now()}`);
+    const tempPath = import_node_path.default.join(realFlagDir, `.oafish-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = import_node_fs.default.constants.O_NOFOLLOW ?? 0;
     const openFlags = import_node_fs.default.constants.O_WRONLY | import_node_fs.default.constants.O_CREAT | import_node_fs.default.constants.O_EXCL | O_NOFOLLOW;
     let fd;
@@ -187,7 +187,7 @@ function digestCode(text, filename) {
     parts.push(ext);
   if (fns.length)
     parts.push(`fns: ${fns.slice(0, 5).join(", ")}`);
-  return `[terse] Read: ${filename} — ${parts.join(" | ")}`;
+  return `[oafish] Read: ${filename} — ${parts.join(" | ")}`;
 }
 function digestBash(response, cmd) {
   const r = response;
@@ -200,14 +200,14 @@ function digestBash(response, cmd) {
 `).filter(Boolean);
   if (Number(code) !== 0) {
     const relevant = [...errLines, ...lines.slice(-5)].slice(0, 8);
-    return `[terse] Bash(exit ${code}): ${relevant.join(" | ").slice(0, 200)}`;
+    return `[oafish] Bash(exit ${code}): ${relevant.join(" | ").slice(0, 200)}`;
   }
   const testMatch = stdout.match(/(\d+)\s+pass(?:ing)?[^\n]*(\d+\s+fail(?:ing)?)?/i);
   if (testMatch) {
-    return `[terse] Bash: ${testMatch[0].trim()}`;
+    return `[oafish] Bash: ${testMatch[0].trim()}`;
   }
   const summary = lines[0]?.slice(0, 100) ?? "";
-  return `[terse] Bash(${lines.length}L): ${summary}${lines.length > 1 ? " …" : ""}`;
+  return `[oafish] Bash(${lines.length}L): ${summary}${lines.length > 1 ? " …" : ""}`;
 }
 function compressMcp(response) {
   try {
@@ -240,7 +240,7 @@ process.stdin.on("end", () => {
       additionalContext = digestBash(tool_response, String(tool_input.command ?? "").slice(0, 60));
     } else if (isMcpTool(tool_name)) {
       const compressed = compressMcp(tool_response);
-      additionalContext = `[terse] ${tool_name}: ${compressed}`;
+      additionalContext = `[oafish] ${tool_name}: ${compressed}`;
       updatedMCPToolOutput = compressed;
     }
     if (!additionalContext)

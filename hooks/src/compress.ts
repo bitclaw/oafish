@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// terse — PostToolUse hook
+// oafish — PostToolUse hook
 // Compresses verbose tool outputs to keep context window lean.
 // For MCP tools: replaces output via updatedMCPToolOutput.
-// For all tools: injects a terse digest via additionalContext.
+// For all tools: injects an oafish digest via additionalContext.
 
 import { getFlagPath, readFlag } from "./config.js";
 
@@ -64,7 +64,7 @@ function digestCode(text: string, filename: string): string {
   if (ext) parts.push(ext);
   if (fns.length) parts.push(`fns: ${fns.slice(0, 5).join(", ")}`);
 
-  return `[terse] Read: ${filename} — ${parts.join(" | ")}`;
+  return `[oafish] Read: ${filename} — ${parts.join(" | ")}`;
 }
 
 // Digest bash output
@@ -79,18 +79,18 @@ function digestBash(response: unknown, cmd: string): string {
 
   if (Number(code) !== 0) {
     const relevant = [...errLines, ...lines.slice(-5)].slice(0, 8);
-    return `[terse] Bash(exit ${code}): ${relevant.join(" | ").slice(0, 200)}`;
+    return `[oafish] Bash(exit ${code}): ${relevant.join(" | ").slice(0, 200)}`;
   }
 
   // Detect test output
   const testMatch = stdout.match(/(\d+)\s+pass(?:ing)?[^\n]*(\d+\s+fail(?:ing)?)?/i);
   if (testMatch) {
-    return `[terse] Bash: ${testMatch[0].trim()}`;
+    return `[oafish] Bash: ${testMatch[0].trim()}`;
   }
 
   // Generic: first line + line count
   const summary = lines[0]?.slice(0, 100) ?? "";
-  return `[terse] Bash(${lines.length}L): ${summary}${lines.length > 1 ? " …" : ""}`;
+  return `[oafish] Bash(${lines.length}L): ${summary}${lines.length > 1 ? " …" : ""}`;
 }
 
 // Compress MCP JSON output — strip whitespace, keep key scalar values
@@ -111,7 +111,7 @@ process.stdin.on("end", () => {
     const data: HookInput = JSON.parse(input);
     const { tool_name, tool_input, tool_response } = data;
 
-    // No-op when terse inactive
+    // No-op when oafish inactive
     const mode = readFlag(getFlagPath());
     if (!mode || mode === "off") process.exit(0);
 
@@ -128,7 +128,7 @@ process.stdin.on("end", () => {
       additionalContext = digestBash(tool_response, String(tool_input.command ?? "").slice(0, 60));
     } else if (isMcpTool(tool_name)) {
       const compressed = compressMcp(tool_response);
-      additionalContext = `[terse] ${tool_name}: ${compressed}`;
+      additionalContext = `[oafish] ${tool_name}: ${compressed}`;
       updatedMCPToolOutput = compressed;
     }
 

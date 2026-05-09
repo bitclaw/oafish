@@ -1,13 +1,13 @@
 {
-  "name": "terse",
+  "name": "oafish",
   "version": "0.1.0",
   "description": "Output compression for Claude Code. Cuts ~75% output tokens, keeps full accuracy.",
   "author": "bitclaw",
-  "homepage": "https://terse.bitclaw.com",
-  "repository": "https://github.com/bitclaw/terse",
+  "homepage": "https://oafish.bitclaw.com",
+  "repository": "https://github.com/bitclaw/oafish",
   "license": "MIT",
   "skills": [
-    "./skills/terse"
+    "./skills/oafish"
   ],
   "hooks": {
     "SessionStart": [

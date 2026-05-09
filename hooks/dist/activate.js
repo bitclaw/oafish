@@ -29,18 +29,18 @@ var VALID_MODES = ["off", "lite", "full", "ultra"];
 var MAX_FLAG_BYTES = 32;
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
-    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "terse");
+    return import_node_path.default.join(process.env.XDG_CONFIG_HOME, "oafish");
   }
   if (process.platform === "win32") {
-    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "terse");
+    return import_node_path.default.join(process.env.APPDATA || import_node_path.default.join(import_node_os.default.homedir(), "AppData", "Roaming"), "oafish");
   }
-  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "terse");
+  return import_node_path.default.join(import_node_os.default.homedir(), ".config", "oafish");
 }
 function getFlagPath() {
   return import_node_path.default.join(getConfigDir(), ".active");
 }
 function getDefaultMode() {
-  const env = process.env.TERSE_DEFAULT_MODE?.toLowerCase();
+  const env = process.env.OAFISH_DEFAULT_MODE?.toLowerCase();
   if (env && VALID_MODES.includes(env))
     return env;
   try {
@@ -52,7 +52,7 @@ function getDefaultMode() {
   return "full";
 }
 function safeWriteFlag(flagPath, content) {
-  const debug = process.env.TERSE_DEBUG === "1";
+  const debug = process.env.OAFISH_DEBUG === "1";
   try {
     const flagDir = import_node_path.default.dirname(flagPath);
     import_node_fs.default.mkdirSync(flagDir, { recursive: true });
@@ -67,7 +67,7 @@ function safeWriteFlag(flagPath, content) {
         if (typeof process.getuid === "function") {
           if (realStat.uid !== process.getuid()) {
             if (debug)
-              process.stderr.write(`[terse] safeWriteFlag: symlink target owned by uid ${realStat.uid}
+              process.stderr.write(`[oafish] safeWriteFlag: symlink target owned by uid ${realStat.uid}
 `);
             return;
           }
@@ -91,7 +91,7 @@ function safeWriteFlag(flagPath, content) {
       if (e.code !== "ENOENT")
         return;
     }
-    const tempPath = import_node_path.default.join(realFlagDir, `.terse-active.${process.pid}.${Date.now()}`);
+    const tempPath = import_node_path.default.join(realFlagDir, `.oafish-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = import_node_fs.default.constants.O_NOFOLLOW ?? 0;
     const openFlags = import_node_fs.default.constants.O_WRONLY | import_node_fs.default.constants.O_CREAT | import_node_fs.default.constants.O_EXCL | O_NOFOLLOW;
     let fd;
@@ -143,7 +143,7 @@ function readFlag(flagPath) {
 }
 
 // hooks/src/activate.ts
-var __dirname = "/home/bitclaw/code/github/bitclaw/public/terse/hooks/src";
+var __dirname = "/home/bitclaw/code/github/bitclaw/public/oafish/hooks/src";
 var claudeDir = process.env.CLAUDE_CONFIG_DIR || import_node_path2.default.join(import_node_os2.default.homedir(), ".claude");
 var settingsPath = import_node_path2.default.join(claudeDir, "settings.json");
 var flagPath = getFlagPath();
@@ -158,7 +158,7 @@ if (mode === "off") {
 safeWriteFlag(flagPath, mode);
 var skillContent = "";
 try {
-  skillContent = import_node_fs2.default.readFileSync(import_node_path2.default.join(__dirname, "..", "..", "skills", "terse", "SKILL.md"), "utf8");
+  skillContent = import_node_fs2.default.readFileSync(import_node_path2.default.join(__dirname, "..", "..", "skills", "oafish", "SKILL.md"), "utf8");
 } catch {}
 var output;
 if (skillContent) {
@@ -180,12 +180,12 @@ if (skillContent) {
     acc.push(line);
     return acc;
   }, []);
-  output = `TERSE MODE ACTIVE — level: ${mode}
+  output = `OAFISH MODE ACTIVE — level: ${mode}
 
 ${filtered.join(`
 `)}`;
 } else {
-  output = `TERSE MODE ACTIVE — level: ${mode}
+  output = `OAFISH MODE ACTIVE — level: ${mode}
 
 ` + `Respond concise. Drop fluff. Keep full technical accuracy.
 
@@ -193,9 +193,9 @@ ${filtered.join(`
 
 ` + `Pattern: [thing] [action] [reason]. [next step].
 
-` + `Auto-clarity: drop terse for security warnings, irreversible ops, ambiguous sequences. Resume after.
+` + `Auto-clarity: drop oafish for security warnings, irreversible ops, ambiguous sequences. Resume after.
 
-` + `"stop terse" or "normal mode" to revert. Level: ${mode}. Switch: /terse lite|full|ultra.`;
+` + `"stop oafish" or "normal mode" to revert. Level: ${mode}. Switch: /oafish lite|full|ultra.`;
 }
 try {
   let hasStatusline = false;
@@ -210,7 +210,7 @@ try {
     const snippet = `"statusLine": { "type": "command", "command": ${JSON.stringify(cmd)} }`;
     output += `
 
-STATUSLINE SETUP NEEDED: terse includes a statusline badge ([TERSE], [TERSE:ULTRA]). ` + `Not configured yet. Add to ${settingsPath}: ${snippet}. ` + `Offer to set this up for user on first interaction.`;
+STATUSLINE SETUP NEEDED: oafish includes a statusline badge ([OAFISH], [OAFISH:ULTRA]). ` + `Not configured yet. Add to ${settingsPath}: ${snippet}. ` + `Offer to set this up for user on first interaction.`;
   }
 } catch {}
 process.stdout.write(output);

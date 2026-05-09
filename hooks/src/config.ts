@@ -9,15 +9,15 @@ const MAX_FLAG_BYTES = 32;
 
 export function getConfigDir(): string {
   if (process.env.XDG_CONFIG_HOME) {
-    return path.join(process.env.XDG_CONFIG_HOME, "terse");
+    return path.join(process.env.XDG_CONFIG_HOME, "oafish");
   }
   if (process.platform === "win32") {
     return path.join(
       process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming"),
-      "terse"
+      "oafish"
     );
   }
-  return path.join(os.homedir(), ".config", "terse");
+  return path.join(os.homedir(), ".config", "oafish");
 }
 
 export function getFlagPath(): string {
@@ -25,7 +25,7 @@ export function getFlagPath(): string {
 }
 
 export function getDefaultMode(): Mode {
-  const env = process.env.TERSE_DEFAULT_MODE?.toLowerCase();
+  const env = process.env.OAFISH_DEFAULT_MODE?.toLowerCase();
   if (env && VALID_MODES.includes(env as Mode)) return env as Mode;
 
   try {
@@ -45,7 +45,7 @@ export function getDefaultMode(): Mode {
 // Symlink-safe flag write. Atomic temp+rename, 0600 perms.
 // Refuses if flag target or parent is an attacker-planted symlink.
 export function safeWriteFlag(flagPath: string, content: string): void {
-  const debug = process.env.TERSE_DEBUG === "1";
+  const debug = process.env.OAFISH_DEBUG === "1";
   try {
     const flagDir = path.dirname(flagPath);
     fs.mkdirSync(flagDir, { recursive: true });
@@ -59,7 +59,7 @@ export function safeWriteFlag(flagPath: string, content: string): void {
         if (!realStat.isDirectory()) return;
         if (typeof process.getuid === "function") {
           if (realStat.uid !== process.getuid()) {
-            if (debug) process.stderr.write(`[terse] safeWriteFlag: symlink target owned by uid ${realStat.uid}\n`);
+            if (debug) process.stderr.write(`[oafish] safeWriteFlag: symlink target owned by uid ${realStat.uid}\n`);
             return;
           }
         } else {
@@ -81,7 +81,7 @@ export function safeWriteFlag(flagPath: string, content: string): void {
       if (e.code !== "ENOENT") return;
     }
 
-    const tempPath = path.join(realFlagDir, `.terse-active.${process.pid}.${Date.now()}`);
+    const tempPath = path.join(realFlagDir, `.oafish-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = (fs.constants.O_NOFOLLOW as number | undefined) ?? 0;
     const openFlags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | O_NOFOLLOW;
     let fd: number | undefined;
