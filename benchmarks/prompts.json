@@ -1,0 +1,62 @@
+[
+  {
+    "id": "react-rerender",
+    "category": "debugging",
+    "prompt": "Why does my React component re-render every time the parent updates even though I wrapped it in React.memo?"
+  },
+  {
+    "id": "auth-middleware",
+    "category": "bugfix",
+    "prompt": "My Express JWT middleware is rejecting valid tokens. The token was signed with RS256 but the middleware uses HS256 to verify. How do I fix this?"
+  },
+  {
+    "id": "postgres-slow-query",
+    "category": "debugging",
+    "prompt": "A Postgres query that joins three tables takes 8 seconds. EXPLAIN shows a sequential scan on a 10M row table even though I have an index. What are the likely causes and how do I fix it?"
+  },
+  {
+    "id": "async-error-handling",
+    "category": "implementation",
+    "prompt": "How do I properly handle errors in a chain of async/await calls in TypeScript without try/catch at every level?"
+  },
+  {
+    "id": "docker-layer-cache",
+    "category": "devops",
+    "prompt": "My Docker build re-runs npm install on every change even when package.json hasn't changed. How do I fix the layer caching?"
+  },
+  {
+    "id": "race-condition",
+    "category": "debugging",
+    "prompt": "I have a race condition in my Node.js code where two concurrent requests both read a counter, increment it, and write it back — sometimes incrementing by 1 instead of 2. How do I fix this without a database lock?"
+  },
+  {
+    "id": "git-rebase-merge",
+    "category": "explanation",
+    "prompt": "What is the difference between git rebase and git merge and when should I use each?"
+  },
+  {
+    "id": "pr-review",
+    "category": "code-review",
+    "prompt": "Review this function for correctness and security issues:\n\n```typescript\nasync function getUser(id: string) {\n  const result = await db.query(`SELECT * FROM users WHERE id = '${id}'`);\n  return result.rows[0];\n}\n```"
+  },
+  {
+    "id": "microservices-split",
+    "category": "architecture",
+    "prompt": "We have a monolith with 200k lines of code. How do we decide where to draw service boundaries when splitting into microservices? What are the signals that a module is a good candidate to extract?"
+  },
+  {
+    "id": "memory-leak",
+    "category": "debugging",
+    "prompt": "My Node.js server's memory usage grows by 50MB every hour and never drops. How do I find the leak? Walk me through the diagnostic process."
+  },
+  {
+    "id": "typescript-generics",
+    "category": "explanation",
+    "prompt": "Explain TypeScript generics with constraints. When should I use `extends` in a generic parameter and what does it buy me over just using `any`?"
+  },
+  {
+    "id": "ci-flaky-tests",
+    "category": "devops",
+    "prompt": "30% of our CI runs fail due to flaky integration tests that pass locally. What are the most common causes of flakiness in integration tests and how do I systematically eliminate them?"
+  }
+]
