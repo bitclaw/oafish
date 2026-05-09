@@ -1,36 +1,36 @@
 {
-  "name": "oafish",
-  "version": "0.1.0",
-  "description": "Output compression for Claude Code. Cuts ~75% output tokens, keeps full accuracy.",
-  "author": "bitclaw",
-  "homepage": "https://oafish.bitclaw.com",
-  "repository": "https://github.com/bitclaw/oafish",
-  "license": "MIT",
-  "skills": [
-    "./skills/oafish",
-    "./skills/oafish-commit",
-    "./skills/oafish-stats",
-    "./skills/oafish-index",
-    "./skills/oafish-crew"
-  ],
-  "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/activate.js\""
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "type": "command",
-        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/tracker.js\""
-      }
-    ],
-    "PostToolUse": [
-      {
-        "type": "command",
-        "command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/compress.js\""
-      }
-    ]
-  }
+	"name": "oafish",
+	"version": "0.1.0",
+	"description": "Output compression for Claude Code. Cuts ~75% output tokens, keeps full accuracy.",
+	"author": "bitclaw",
+	"homepage": "https://oafish.bitclaw.com",
+	"repository": "https://github.com/bitclaw/oafish",
+	"license": "MIT",
+	"skills": [
+		"./skills/oafish",
+		"./skills/oafish-commit",
+		"./skills/oafish-stats",
+		"./skills/oafish-index",
+		"./skills/oafish-crew"
+	],
+	"hooks": {
+		"SessionStart": [
+			{
+				"type": "command",
+				"command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/activate.js\""
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"type": "command",
+				"command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/tracker.js\""
+			}
+		],
+		"PostToolUse": [
+			{
+				"type": "command",
+				"command": "node \"$CLAUDE_PLUGIN_ROOT/hooks/dist/compress.js\""
+			}
+		]
+	}
 }

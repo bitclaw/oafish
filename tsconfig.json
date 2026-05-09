@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "hooks/dist",
-    "rootDir": "hooks/src",
-    "types": ["bun-types"]
-  },
-  "include": ["hooks/src/**/*.ts"],
-  "exclude": ["node_modules", "hooks/dist"]
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"outDir": "hooks/dist",
+		"rootDir": "hooks/src",
+		"types": ["bun-types"]
+	},
+	"include": ["hooks/src/**/*.ts"],
+	"exclude": ["node_modules", "hooks/dist"]
 }
