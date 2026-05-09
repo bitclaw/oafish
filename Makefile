@@ -15,7 +15,7 @@ typecheck: ## Type-check TypeScript (no emit)
 # ── lint (report only — exits non-zero on issues) ─────────────────────────
 
 .PHONY: lint
-lint: lint.ts lint.py ## Lint all (TypeScript + Python)
+lint: lint.ts lint.py lint.sh ## Lint all (TypeScript + Python + shell)
 
 .PHONY: lint.ts
 lint.ts: ## Biome lint + format check
@@ -25,6 +25,10 @@ lint.ts: ## Biome lint + format check
 lint.py: ## Ruff lint + format check
 	@uvx ruff check benchmarks/
 	@uvx ruff format --check benchmarks/
+
+.PHONY: lint.sh
+lint.sh: ## Shellcheck bash scripts
+	@shellcheck install dev-install hooks/statusline
 
 # ── fix (auto-fix in place) ───────────────────────────────────────────────
 

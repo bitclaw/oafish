@@ -30,6 +30,16 @@ jobs:
       - name: Lint + format (biome)
         run: bun run lint
 
+  lint-shell:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: shellcheck install dev-install hooks/statusline
+
   lint-python:
     name: Ruff lint + format
     runs-on: ubuntu-latest
