@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+# sync-codex-plugin — generate Codex plugin packaging from repo source of truth
+# Source of truth:
+#   skills/
+#   hooks/hooks.json
+#   hooks/dist/
+# Output:
+#   .agents/plugins/marketplace.json
+#   plugins/oafish/
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$REPO_ROOT/plugins/oafish"
+MARKETPLACE_PATH="$REPO_ROOT/.agents/plugins/marketplace.json"
+
+ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
+info() { printf '  \033[34m→\033[0m %s\n' "$*"; }
+err()  { printf '  \033[31m✗\033[0m %s\n' "$*" >&2; exit 1; }
+
+copy_skill() {
+  local skill_name="$1"
+  local src="$REPO_ROOT/skills/$skill_name"
+  local dest="$PLUGIN_ROOT/skills/$skill_name"
+
+  [[ -d "$src" ]] || err "Missing skill source: $src"
+
+  rm -rf "$dest"
+  mkdir -p "$dest"
+  cp "$src/SKILL.md" "$dest/SKILL.md"
+}
+
+[[ -f "$REPO_ROOT/.codex-plugin/plugin.json" ]] \
+  || err "Missing Codex plugin source manifest: $REPO_ROOT/.codex-plugin/plugin.json"
+
+[[ -f "$REPO_ROOT/hooks/hooks.json" ]] \
+  || err "Missing Codex hooks config: $REPO_ROOT/hooks/hooks.json"
+
+[[ -d "$REPO_ROOT/hooks/dist" ]] \
+  || err "Missing compiled hooks: $REPO_ROOT/hooks/dist — run: bun run build"
+
+mkdir -p "$REPO_ROOT/.agents/plugins"
+mkdir -p "$PLUGIN_ROOT/.codex-plugin" "$PLUGIN_ROOT/hooks" "$PLUGIN_ROOT/skills"
+
+cat > "$MARKETPLACE_PATH" <<'EOF'
+{
+  "name": "oafish",
+  "interface": {
+    "displayName": "oafish"
+  },
+  "plugins": [
+    {
+      "name": "oafish",
+      "source": {
+        "source": "local",
+        "path": "./plugins/oafish"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
+EOF
+ok "Wrote Codex marketplace"
+
+cat > "$PLUGIN_ROOT/.codex-plugin/plugin.json" <<'EOF'
+{
+  "name": "oafish",
+  "version": "0.2.0",
+  "description": "Output compression for Codex. Cuts ~75% output tokens, keeps full accuracy.",
+  "author": {
+    "name": "bitclaw",
+    "url": "https://github.com/bitclaw"
+  },
+  "homepage": "https://github.com/bitclaw/oafish",
+  "repository": "https://github.com/bitclaw/oafish",
+  "license": "MIT",
+  "keywords": [
+    "compression",
+    "productivity",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "oafish",
+    "shortDescription": "Output compression mode for Codex",
+    "longDescription": "Compresses verbose responses and tool output while preserving technical accuracy.",
+    "developerName": "bitclaw",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive"
+    ],
+    "websiteURL": "https://github.com/bitclaw/oafish",
+    "defaultPrompt": [
+      "Use @plugins/oafish or @plugins/oafish:oafish for concise answers.",
+      "Use @plugins/oafish:oafish-commit to draft a commit message."
+    ],
+    "brandColor": "#264653",
+    "screenshots": []
+  }
+}
+EOF
+ok "Wrote Codex plugin manifest"
+
+cp "$REPO_ROOT/hooks/hooks.json" "$PLUGIN_ROOT/hooks/hooks.json"
+rm -rf "$PLUGIN_ROOT/hooks/dist"
+cp -R "$REPO_ROOT/hooks/dist" "$PLUGIN_ROOT/hooks/dist"
+ok "Copied Codex hooks"
+
+copy_skill "oafish"
+copy_skill "oafish-commit"
+copy_skill "oafish-crew"
+copy_skill "oafish-help"
+copy_skill "oafish-index"
+copy_skill "oafish-review"
+copy_skill "oafish-stats"
+ok "Copied skills from source of truth"
+
+info "Generated paths:"
+echo "  Marketplace: $MARKETPLACE_PATH"
+echo "  Plugin:      $PLUGIN_ROOT"

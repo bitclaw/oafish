@@ -28,6 +28,13 @@ require_python() {
   command -v python3 &>/dev/null || err "python3 required"
 }
 
+sync_codex_plugin() {
+  [[ -f "$REPO_ROOT/sync-codex-plugin" ]] \
+    || err "Missing sync script: $REPO_ROOT/sync-codex-plugin"
+
+  bash "$REPO_ROOT/sync-codex-plugin"
+}
+
 # ── flags ─────────────────────────────────────────────────────────────────
 
 while [[ $# -gt 0 ]]; do
@@ -212,34 +219,28 @@ uninstall_opencode() {
 # ── Codex CLI ─────────────────────────────────────────────────────────────
 
 install_codex() {
-  [[ -f "$REPO_ROOT/.codex-plugin/plugin.json" ]] \
-    || err "Not an oafish repo root: $REPO_ROOT"
-
   [[ -f "$REPO_ROOT/hooks/dist/activate.js" ]] \
     || err "Build missing. Run: bun run build"
 
   command -v codex &>/dev/null || err "codex CLI not found"
 
+  sync_codex_plugin
+
   codex plugin marketplace add "$REPO_ROOT"
 
-  ok "Registered Codex plugin from local path"
+  ok "Registered Codex marketplace from local path"
   echo ""
-  echo "  Path: $REPO_ROOT"
+  echo "  Marketplace: oafish"
+  echo "  Path:        $REPO_ROOT"
   echo ""
   info "Restart Codex to activate."
-  info "Verify: skills and hooks load on session start."
+  info "Verify in fresh session: open /plugins, install oafish, then use @plugins/oafish."
 }
 
 uninstall_codex() {
   command -v codex &>/dev/null || err "codex CLI not found"
-  # Codex doesn't have a remove command yet; remove manually
-  local codex_plugins="$HOME/.codex/plugins/oafish"
-  if [[ -d "$codex_plugins" ]]; then
-    rm -rf "$codex_plugins"
-    ok "Removed Codex plugin directory: $codex_plugins"
-  else
-    info "No Codex plugin directory found at $codex_plugins — nothing to remove."
-  fi
+  codex plugin marketplace remove oafish
+  ok "Removed Codex marketplace: oafish"
 }
 
 # ── dispatch ──────────────────────────────────────────────────────────────

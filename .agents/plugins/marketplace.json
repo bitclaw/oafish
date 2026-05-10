@@ -1,0 +1,20 @@
+{
+  "name": "oafish",
+  "interface": {
+    "displayName": "oafish"
+  },
+  "plugins": [
+    {
+      "name": "oafish",
+      "source": {
+        "source": "local",
+        "path": "./plugins/oafish"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

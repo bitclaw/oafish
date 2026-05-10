@@ -8,4 +8,4 @@ agents/opencode/dist/
 benchmarks/results/*.json
 .venv/
 __pycache__/
-
+plugins/oafish/
