@@ -49,11 +49,12 @@ with open(path, "w") as f:
     f.write("\n")
 EOF
 
-  # Remove enabledPlugins entry from settings.json
+  # Remove enabledPlugins + extraKnownMarketplaces entries from settings.json
   if [[ -f "$SETTINGS_JSON" ]]; then
     python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" <<'EOF'
 import sys, json
 path, key = sys.argv[1], sys.argv[2]
+marketplace_name = key.split("@")[1]
 with open(path) as f:
     data = json.load(f)
 enabled = data.get("enabledPlugins", {})
@@ -62,6 +63,12 @@ if enabled:
     data["enabledPlugins"] = enabled
 else:
     data.pop("enabledPlugins", None)
+marketplaces = data.get("extraKnownMarketplaces", {})
+marketplaces.pop(marketplace_name, None)
+if marketplaces:
+    data["extraKnownMarketplaces"] = marketplaces
+else:
+    data.pop("extraKnownMarketplaces", None)
 with open(path, "w") as f:
     json.dump(data, f, indent=4)
     f.write("\n")
@@ -144,18 +151,22 @@ if [[ ! -f "$SETTINGS_JSON" ]]; then
   echo '{}' > "$SETTINGS_JSON"
 fi
 
-python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" <<'EOF'
+python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" <<'EOF'
 import sys, json
-path, key = sys.argv[1], sys.argv[2]
+path, key, repo_root = sys.argv[1], sys.argv[2], sys.argv[3]
+marketplace_name = key.split("@")[1]
 with open(path) as f:
     data = json.load(f)
 data.setdefault("enabledPlugins", {})[key] = True
+data.setdefault("extraKnownMarketplaces", {})[marketplace_name] = {
+    "source": {"source": "directory", "path": repo_root}
+}
 with open(path, "w") as f:
     json.dump(data, f, indent=4)
     f.write("\n")
 EOF
 
-ok "Enabled in settings.json"
+ok "Enabled in settings.json (enabledPlugins + extraKnownMarketplaces)"
 
 # ── done ─────────────────────────────────────────────────────────────────
 
