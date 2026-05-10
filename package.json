@@ -12,7 +12,8 @@
 		"dev:stats": "bun run hooks/src/stats.ts",
 		"typecheck": "tsc --noEmit",
 		"lint": "biome check",
-		"fix": "biome check --write"
+		"fix": "biome check --write",
+		"publish:npm": "npm publish --access public"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.95.0"
