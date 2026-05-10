@@ -228,8 +228,11 @@ fi
 
 if want codex && detect "command:codex"; then
   say "Codex → codex plugin marketplace add $REPO"
-  try codex plugin marketplace add "$REPO" && ok "Codex plugin installed" \
-    || install_skills "Codex" "codex"
+  if try codex plugin marketplace add "$REPO"; then
+    ok "Codex plugin installed"
+  else
+    install_skills "Codex" "codex"
+  fi
   INSTALLED+=(codex)
 elif want codex; then
   skip "Codex not found"

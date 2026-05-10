@@ -246,11 +246,11 @@ uninstall_codex() {
 
 case "$AGENT" in
   claude)
-    [[ $UNINSTALL -eq 1 ]] && uninstall_claude || install_claude ;;
+    if [[ $UNINSTALL -eq 1 ]]; then uninstall_claude; else install_claude; fi ;;
   opencode)
-    [[ $UNINSTALL -eq 1 ]] && uninstall_opencode || install_opencode ;;
+    if [[ $UNINSTALL -eq 1 ]]; then uninstall_opencode; else install_opencode; fi ;;
   codex)
-    [[ $UNINSTALL -eq 1 ]] && uninstall_codex || install_codex ;;
+    if [[ $UNINSTALL -eq 1 ]]; then uninstall_codex; else install_codex; fi ;;
   *)
     err "Unknown agent: $AGENT. Valid: claude, opencode, codex" ;;
 esac
