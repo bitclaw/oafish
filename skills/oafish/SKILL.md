@@ -64,6 +64,22 @@ Run /oafish-index if oversized. Disable unused MCP servers — each loads tool-d
 Batch multiple requests into one prompt — reduces round-trip context growth.
 Use /compact when session grows long. Switch to ultra when context >60% full.
 
+## Statusline Sync
+
+On every mode activation or switch (including initial `/oafish` invoke), write current level to flag file:
+
+```bash
+printf '<level>' > "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.active"
+```
+
+Where `<level>` is `lite`, `full`, or `ultra`. On "stop oafish" / "normal mode", delete the file:
+
+```bash
+rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.active"
+```
+
+This keeps the TUI statusline badge in sync with current mode.
+
 ## Boundaries
 
 Code/commits/PRs: write normal. "stop oafish" or "normal mode": revert. Level persist until changed or session end.
