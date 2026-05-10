@@ -28,34 +28,47 @@
 - [x] **Versioned publish scripts** — `bun run publish:patch/minor/major` bumps version, runs build, pushes tag, publishes; auth-gated with `npm whoami`
 - [ ] **Better Cline detection** — current detection relies on extension directory scan; use Cline config file if available
 
-## v0.3 — next (prioritized by impact)
+## v0.3 — next (easiest wins first, then differentiation, then moat)
+
+### Quick wins — next session
+
+- [ ] **Live compression ratio in statusline** — `[OAFISH 71%]` instead of `[OAFISH]`; real token savings % from current session surfaced each turn. Stats + statusline already exist — small delta. Every screenshot becomes marketing.
+
+- [ ] **`/oafish explain`** — show current mode, active rules summary, and session compression ratio. Single skill, no hook changes needed.
+
+- [ ] **Per-project `.oafish` config** — `.oafish` file in project root overrides global mode, intensity, and budget. Detected on `SessionStart`. Teams can commit project-specific compression settings.
 
 ### P0 — highest leverage
 
-- [ ] **Session deduplication** — PostToolUse tracks a hash of every tool output per session; re-reads of unchanged files inject `[unchanged since call #N]` instead of full content; changed files inject a compact diff. Only possible from the hook layer — caveman has no PostToolUse hooks at all. Biggest single token win in long sessions.
+- [ ] **Session deduplication** — PostToolUse tracks a hash of every tool output per session; re-reads of unchanged files inject `[unchanged since call #N]` instead of full content; changed files inject a compact diff. Only possible from the hook layer — competitors have no PostToolUse hooks at all. Biggest single token win in long sessions.
 
-- [ ] **Eval harness with published benchmarks** — Three-arm benchmark: baseline / terse prompt / oafish skill; measures real token counts via Claude API; publishes results to `benchmarks/results/`. Credibility gap vs competitors who publish numbers. Required to back any "~75% reduction" claim with proof.
+- [ ] **Context budget mode** — `"budget": 50000` in `.oafish` or `OAFISH_BUDGET` env var; oafish auto-manages intensity to hit it (lite at 30%, full at 55%, ultra at 75%, dedup + aggressive at 85%). Deterministic session cost for CI/API budget use cases. Nobody else has this.
+
+- [ ] **Eval harness with published benchmarks** — Three-arm benchmark: baseline / terse prompt / oafish skill; measures real token counts via Claude API; publishes results to `benchmarks/results/`. Required to back any "~75% reduction" claim with proof. Credibility driver.
 
 ### P1 — strong differentiation
 
 - [ ] **Compaction-aware compression** — Hook into context summarization so the compacted summary itself is oafish-compressed. opencode: `experimental.session.compacting` hook. Claude Code: `/oafish-compact` skill wrapping `/compact` with injected compression prompt. Denser summaries = longer effective sessions before next compaction.
 
-- [ ] **Per-project `.oafish` config** — `.oafish` file in project root overrides global mode and config. Detected on `SessionStart`. Lets teams commit project-specific compression settings.
+- [ ] **Input/prompt compression via UserPromptSubmit** — When user pastes >N lines into a prompt, auto-compress before it hits the model. Completes both sides of compression (currently output-only).
 
-- [ ] **Input/prompt compression via UserPromptSubmit** — When user pastes >N lines into a prompt, auto-compress before it hits the model. Completes both sides of compression (currently output-only); matches caveman's described L01 layer.
+- [ ] **Team compression via pre-commit hook** — Auto-compress `CLAUDE.md`, `.cursorrules`, `AGENTS.md` on commit so anyone cloning gets pre-compressed context files. Oafish becomes repo infrastructure, not just per-developer tooling.
+
+- [ ] **Adaptive compression** — Track what the model echoes back vs ignores across a session; tighten compression on content the model never references, ease off on content that triggers re-reads. No LLM needed — pattern matching on session behavior. Static rules are the ceiling for competitors; adaptive rules are oafish's floor.
 
 ### P2 — ecosystem / moat
 
-- [ ] **Cross-agent state visibility** — Since all agents share `~/.config/oafish/`, expose a live view: which agents are active, current mode per agent, combined token savings across the stack. Surface via `/oafish stats --agents` and a statusline variant.
+- [ ] **Compression proxy API** — Local HTTP proxy at `localhost:PORT`; any tool with a configurable API base URL (LangChain, custom scripts, any API client) routes through oafish. Compresses system prompts before they leave your machine, tool results before they enter the next message. Makes oafish useful to everyone writing LLM code, not just users of supported agents.
 
-- [ ] **oafish-mem** — Lightweight cross-session memory: append-only `~/.config/oafish/mem.jsonl`, accessible via `/oafish-mem add` and `/oafish-mem recall <query>` skills. Keyword search only (no vector, no SQLite). Oafish-compressed at write time. Works in every agent oafish supports — not tied to one CLI.
+- [ ] **Cross-agent state visibility** — Expose a live view of all oafish-active agents via `~/.config/oafish/`; current mode per agent, combined savings across the stack. Surface via `/oafish stats --agents`.
 
-- [ ] **Compression schema standard** — Machine-readable `compression.schema.json` defining the oafish compression protocol with versioning and field-level attestation. Makes oafish implementable by other tools; positions it as the open standard rather than one of many compression plugins.
+- [ ] **oafish-mem** — Lightweight cross-session memory: append-only `~/.config/oafish/mem.jsonl`, accessible via `/oafish-mem add` and `/oafish-mem recall <query>` skills. Keyword search, no vector/SQLite. Oafish-compressed at write time. Works in every supported agent.
+
+- [ ] **Compression schema standard** — Machine-readable `compression.schema.json` defining the oafish protocol with versioning and field-level attestation. Positions oafish as the open standard other tools implement against.
 
 ## Backlog / exploring
 
 - [ ] **Windows installer** (PowerShell)
-- [ ] **`/oafish explain`** — show current mode + what rules are active
 - [ ] **More agents** — Continue, Aider, Zed AI, JetBrains AI Assistant, Ampcode, Gemini CLI native plugin
 - [ ] **Wenyan mode** — classical Chinese compression (extremely token-dense, niche)
 - [ ] **Agent-specific rule variations** — slight rule differences per agent where behavior differs
