@@ -13,7 +13,9 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "biome check",
 		"fix": "biome check --write",
-		"publish:npm": "npm publish --access public"
+		"publish:patch": "npm version patch && git push --follow-tags && npm publish --access public",
+		"publish:minor": "npm version minor && git push --follow-tags && npm publish --access public",
+		"publish:major": "npm version major && git push --follow-tags && npm publish --access public"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.95.0"
