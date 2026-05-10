@@ -97,3 +97,12 @@ All checks must pass (`make ci`) before opening a PR.
 ### Single source of truth
 
 Each skill's `SKILL.md` is the only file to edit for behavior changes. The SessionStart hook reads it at runtime — no duplication, no sync step needed.
+
+---
+
+## Relevant links
+
+| Resource | URL |
+|----------|-----|
+| Plugin manifest schema | https://www.schemastore.org/claude-code-plugin-manifest.json |
+| Marketplace schema | https://www.schemastore.org/claude-code-marketplace.json |
