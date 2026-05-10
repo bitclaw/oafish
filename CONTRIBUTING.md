@@ -102,7 +102,8 @@ Each skill's `SKILL.md` is the only file to edit for behavior changes. The Sessi
 
 ## Relevant links
 
-| Resource | URL |
-|----------|-----|
+| Resource               | URL |
+|------------------------|-----|
+| Create plugins         | https://code.claude.com/docs/en/plugins |
 | Plugin manifest schema | https://www.schemastore.org/claude-code-plugin-manifest.json |
-| Marketplace schema | https://www.schemastore.org/claude-code-marketplace.json |
+| Marketplace schema     | https://www.schemastore.org/claude-code-marketplace.json |
