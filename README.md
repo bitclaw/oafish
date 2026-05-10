@@ -49,6 +49,11 @@ normal mode      deactivate
 
 Mode persists across turns. No drift. Deactivates only on explicit command.
 
+For Codex, invoke oafish with `@...`, not `/...`. `@oafish` can be ambiguous in
+this repo because Codex also discovers repo-local skills. To force the plugin
+surface, use `@plugins/oafish` or a specific skill such as
+`@plugins/oafish:oafish-commit`.
+
 ---
 
 ## Intensity levels
