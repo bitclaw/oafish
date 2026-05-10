@@ -1,0 +1,11 @@
+{
+	"name": "oafish",
+	"version": "0.2.0",
+	"description": "Output compression for Codex. Cuts ~75% output tokens, keeps full accuracy.",
+	"author": {
+		"name": "bitclaw",
+		"url": "https://github.com/bitclaw"
+	},
+	"skills": "./skills/",
+	"hooks": "./hooks/hooks.json"
+}

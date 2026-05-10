@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# dev-install — register local oafish repo as a Claude Code plugin
+# dev-install — register local oafish repo for local agent development
 # Run once after cloning. Re-run after hook changes (with bun run build first).
 # Usage:
-#   bash dev-install             # install
-#   bash dev-install --uninstall # remove dev plugin entry
+#   bash dev-install                        # Claude Code (default)
+#   bash dev-install --agent opencode       # opencode
+#   bash dev-install --agent codex          # Codex CLI
+#   bash dev-install --agent claude         # Claude Code (explicit)
+#   bash dev-install --uninstall            # remove (uses current --agent)
 
 set -euo pipefail
 
@@ -12,6 +15,8 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 PLUGINS_JSON="$CLAUDE_DIR/plugins/installed_plugins.json"
 SETTINGS_JSON="$CLAUDE_DIR/settings.json"
+AGENT="claude"
+UNINSTALL=0
 
 # ── helpers ───────────────────────────────────────────────────────────────
 
@@ -23,9 +28,101 @@ require_python() {
   command -v python3 &>/dev/null || err "python3 required"
 }
 
-# ── uninstall ─────────────────────────────────────────────────────────────
+# ── flags ─────────────────────────────────────────────────────────────────
 
-uninstall() {
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent|-a)
+      AGENT="${2:-}"; shift 2 ;;
+    --uninstall|-u)
+      UNINSTALL=1; shift ;;
+    --help|-h)
+      echo "Usage: bash dev-install [--agent claude|opencode|codex] [--uninstall]"
+      echo ""
+      echo "  --agent    Target agent (default: claude)"
+      echo "  --uninstall  Remove dev registration for the agent"
+      exit 0
+      ;;
+    *) err "Unknown flag: $1" ;;
+  esac
+done
+
+# ── Claude Code ───────────────────────────────────────────────────────────
+
+install_claude() {
+  require_python
+
+  [[ -f "$REPO_ROOT/.claude-plugin/plugin.json" ]] \
+    || err "Not an oafish repo root: $REPO_ROOT"
+
+  [[ -f "$REPO_ROOT/hooks/dist/activate.js" ]] \
+    || err "Build missing. Run: bun run build"
+
+  [[ -d "$CLAUDE_DIR" ]] \
+    || err "Claude Code config dir not found: $CLAUDE_DIR"
+
+  mkdir -p "$CLAUDE_DIR/plugins"
+
+  NOW="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+
+  python3 - "$PLUGINS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" "$NOW" <<'EOF'
+import sys, json, os
+path, key, repo_root, now = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+else:
+    data = {"version": 2, "plugins": {}}
+entry = {
+    "scope": "user",
+    "installPath": repo_root,
+    "version": "local",
+    "installedAt": now,
+    "lastUpdated": now,
+    "gitCommitSha": "local"
+}
+plugins = data.setdefault("plugins", {})
+existing = plugins.get(key, [])
+existing = [p for p in existing if p.get("version") != "local"]
+existing.insert(0, entry)
+plugins[key] = existing
+data["plugins"] = plugins
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+
+  ok "Registered in installed_plugins.json"
+
+  if [[ ! -f "$SETTINGS_JSON" ]]; then
+    echo '{}' > "$SETTINGS_JSON"
+  fi
+
+  python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" <<'EOF'
+import sys, json
+path, key, repo_root = sys.argv[1], sys.argv[2], sys.argv[3]
+marketplace_name = key.split("@")[1]
+with open(path) as f:
+    data = json.load(f)
+data.setdefault("enabledPlugins", {})[key] = True
+data.setdefault("extraKnownMarketplaces", {})[marketplace_name] = {
+    "source": {"source": "directory", "path": repo_root}
+}
+with open(path, "w") as f:
+    json.dump(data, f, indent=4)
+    f.write("\n")
+EOF
+
+  ok "Enabled in settings.json (enabledPlugins + extraKnownMarketplaces)"
+  echo ""
+  echo "  Plugin: $PLUGIN_KEY"
+  echo "  Path:   $REPO_ROOT"
+  echo ""
+  info "Restart Claude Code to activate."
+  info "Verify with: /oafish-help"
+}
+
+uninstall_claude() {
   require_python
 
   if [[ ! -f "$PLUGINS_JSON" ]]; then
@@ -49,7 +146,6 @@ with open(path, "w") as f:
     f.write("\n")
 EOF
 
-  # Remove enabledPlugins + extraKnownMarketplaces entries from settings.json
   if [[ -f "$SETTINGS_JSON" ]]; then
     python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" <<'EOF'
 import sys, json
@@ -76,103 +172,85 @@ EOF
   fi
 
   ok "Removed dev plugin. Restart Claude Code."
-  exit 0
 }
 
-# ── flags ─────────────────────────────────────────────────────────────────
+# ── opencode ──────────────────────────────────────────────────────────────
 
-for arg in "$@"; do
-  case "$arg" in
-    --uninstall|-u) uninstall ;;
-    --help|-h)
-      echo "Usage: bash dev-install [--uninstall]"
-      exit 0
-      ;;
-    *) err "Unknown flag: $arg" ;;
-  esac
-done
+OPENCODE_PLUGINS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/plugins"
+OPENCODE_PLUGIN_LINK="$OPENCODE_PLUGINS_DIR/oafish.js"
 
-# ── pre-checks ────────────────────────────────────────────────────────────
+install_opencode() {
+  local plugin_src="$REPO_ROOT/agents/opencode/dist/plugin.js"
 
-require_python
+  [[ -f "$plugin_src" ]] \
+    || err "Build missing: $plugin_src — run: bun run build"
 
-[[ -f "$REPO_ROOT/.claude-plugin/plugin.json" ]] \
-  || err "Not an oafish repo root: $REPO_ROOT"
+  mkdir -p "$OPENCODE_PLUGINS_DIR"
 
-[[ -f "$REPO_ROOT/hooks/dist/activate.js" ]] \
-  || err "Build missing. Run: bun run build"
+  # Remove stale link before re-creating
+  rm -f "$OPENCODE_PLUGIN_LINK"
+  ln -s "$plugin_src" "$OPENCODE_PLUGIN_LINK"
 
-[[ -d "$CLAUDE_DIR" ]] \
-  || err "Claude Code config dir not found: $CLAUDE_DIR"
-
-mkdir -p "$CLAUDE_DIR/plugins"
-
-# ── installed_plugins.json ────────────────────────────────────────────────
-
-NOW="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
-
-python3 - "$PLUGINS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" "$NOW" <<'EOF'
-import sys, json, os
-path, key, repo_root, now = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-
-if os.path.exists(path):
-    with open(path) as f:
-        data = json.load(f)
-else:
-    data = {"version": 2, "plugins": {}}
-
-entry = {
-    "scope": "user",
-    "installPath": repo_root,
-    "version": "local",
-    "installedAt": now,
-    "lastUpdated": now,
-    "gitCommitSha": "local"
+  ok "Symlinked opencode plugin"
+  echo ""
+  echo "  Link:   $OPENCODE_PLUGIN_LINK"
+  echo "  Target: $plugin_src"
+  echo ""
+  info "Start opencode — plugin auto-loads from global plugins dir."
+  info "Verify: oafish rules appear in system prompt context."
 }
 
-plugins = data.setdefault("plugins", {})
-existing = plugins.get(key, [])
-# Remove any existing local entry, keep remote entries
-existing = [p for p in existing if p.get("version") != "local"]
-existing.insert(0, entry)  # local takes precedence (first entry wins)
-plugins[key] = existing
-data["plugins"] = plugins
-
-with open(path, "w") as f:
-    json.dump(data, f, indent=4)
-    f.write("\n")
-EOF
-
-ok "Registered in installed_plugins.json"
-
-# ── settings.json ─────────────────────────────────────────────────────────
-
-if [[ ! -f "$SETTINGS_JSON" ]]; then
-  echo '{}' > "$SETTINGS_JSON"
-fi
-
-python3 - "$SETTINGS_JSON" "$PLUGIN_KEY" "$REPO_ROOT" <<'EOF'
-import sys, json
-path, key, repo_root = sys.argv[1], sys.argv[2], sys.argv[3]
-marketplace_name = key.split("@")[1]
-with open(path) as f:
-    data = json.load(f)
-data.setdefault("enabledPlugins", {})[key] = True
-data.setdefault("extraKnownMarketplaces", {})[marketplace_name] = {
-    "source": {"source": "directory", "path": repo_root}
+uninstall_opencode() {
+  if [[ -L "$OPENCODE_PLUGIN_LINK" ]]; then
+    rm "$OPENCODE_PLUGIN_LINK"
+    ok "Removed opencode plugin symlink."
+  else
+    info "No symlink found at $OPENCODE_PLUGIN_LINK — nothing to remove."
+  fi
 }
-with open(path, "w") as f:
-    json.dump(data, f, indent=4)
-    f.write("\n")
-EOF
 
-ok "Enabled in settings.json (enabledPlugins + extraKnownMarketplaces)"
+# ── Codex CLI ─────────────────────────────────────────────────────────────
 
-# ── done ─────────────────────────────────────────────────────────────────
+install_codex() {
+  [[ -f "$REPO_ROOT/.codex-plugin/plugin.json" ]] \
+    || err "Not an oafish repo root: $REPO_ROOT"
 
-echo ""
-echo "  Plugin: $PLUGIN_KEY"
-echo "  Path:   $REPO_ROOT"
-echo ""
-info "Restart Claude Code to activate."
-info "Verify with: /oafish-help"
+  [[ -f "$REPO_ROOT/hooks/dist/activate.js" ]] \
+    || err "Build missing. Run: bun run build"
+
+  command -v codex &>/dev/null || err "codex CLI not found"
+
+  codex plugin marketplace add "$REPO_ROOT"
+
+  ok "Registered Codex plugin from local path"
+  echo ""
+  echo "  Path: $REPO_ROOT"
+  echo ""
+  info "Restart Codex to activate."
+  info "Verify: skills and hooks load on session start."
+}
+
+uninstall_codex() {
+  command -v codex &>/dev/null || err "codex CLI not found"
+  # Codex doesn't have a remove command yet; remove manually
+  local codex_plugins="$HOME/.codex/plugins/oafish"
+  if [[ -d "$codex_plugins" ]]; then
+    rm -rf "$codex_plugins"
+    ok "Removed Codex plugin directory: $codex_plugins"
+  else
+    info "No Codex plugin directory found at $codex_plugins — nothing to remove."
+  fi
+}
+
+# ── dispatch ──────────────────────────────────────────────────────────────
+
+case "$AGENT" in
+  claude)
+    [[ $UNINSTALL -eq 1 ]] && uninstall_claude || install_claude ;;
+  opencode)
+    [[ $UNINSTALL -eq 1 ]] && uninstall_opencode || install_opencode ;;
+  codex)
+    [[ $UNINSTALL -eq 1 ]] && uninstall_codex || install_codex ;;
+  *)
+    err "Unknown agent: $AGENT. Valid: claude, opencode, codex" ;;
+esac

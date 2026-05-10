@@ -180,10 +180,37 @@ elif want copilot; then
   skip "GitHub Copilot (gh) not found"
 fi
 
-# opencode — write directly to global AGENTS.md (no npm needed)
-OPENCODE_AGENTS="$HOME/.config/opencode/AGENTS.md"
-if want opencode && detect "command:opencode||file:$OPENCODE_AGENTS"; then
-  write_rules "opencode" "$OPENCODE_AGENTS"
+# opencode — native plugin (opencode.json) with AGENTS.md fallback
+OPENCODE_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+OPENCODE_JSON="$OPENCODE_CFG/opencode.json"
+OPENCODE_AGENTS="$OPENCODE_CFG/AGENTS.md"
+if want opencode && detect "command:opencode||file:$OPENCODE_AGENTS||dir:$OPENCODE_CFG"; then
+  # Try native plugin install first (opencode ≥ 0.3)
+  if command -v opencode &>/dev/null && opencode --version 2>/dev/null | grep -qE '^0\.[3-9]|^[1-9]'; then
+    say "opencode → $OPENCODE_JSON (native plugin)"
+    if [[ $DRY_RUN -eq 0 ]]; then
+      mkdir -p "$OPENCODE_CFG"
+      python3 - "$OPENCODE_JSON" <<'EOF'
+import sys, json, os
+path = sys.argv[1]
+data = {}
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+plugins = data.get("plugin", [])
+if "oafish" not in plugins:
+    plugins.append("oafish")
+data["plugin"] = plugins
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+EOF
+    fi
+    ok "opencode native plugin registered"
+  else
+    # Fallback: write rules to AGENTS.md for older opencode versions
+    write_rules "opencode" "$OPENCODE_AGENTS"
+  fi
   INSTALLED+=(opencode)
 elif want opencode; then
   skip "opencode not found"
@@ -200,7 +227,9 @@ fi
 # ── Path 3: Skills-based agents ───────────────────────────────────────────
 
 if want codex && detect "command:codex"; then
-  install_skills "Codex" "codex"
+  say "Codex → codex plugin marketplace add $REPO"
+  try codex plugin marketplace add "$REPO" && ok "Codex plugin installed" \
+    || install_skills "Codex" "codex"
   INSTALLED+=(codex)
 elif want codex; then
   skip "Codex not found"

@@ -3,8 +3,12 @@
 	"version": "0.2.0",
 	"description": "Output compression for AI coding agents",
 	"type": "module",
+	"main": "./agents/opencode/dist/plugin.js",
+	"exports": {
+		".": "./agents/opencode/dist/plugin.js"
+	},
 	"scripts": {
-		"build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts hooks/src/compress-file.ts hooks/src/mcp-shrink.ts --outdir hooks/dist --target node --format cjs",
+		"build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts hooks/src/compress-file.ts hooks/src/mcp-shrink.ts --outdir hooks/dist --target node --format cjs && bun build agents/opencode/plugin.ts --outdir agents/opencode/dist --target node --format esm",
 		"dev:activate": "bun run hooks/src/activate.ts",
 		"dev:tracker": "bun run hooks/src/tracker.ts",
 		"dev:compress": "bun run hooks/src/compress.ts",
@@ -22,6 +26,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
+		"@opencode-ai/plugin": "latest",
 		"@types/bun": "latest",
 		"typescript": "^5.0.0"
 	}

@@ -1,5 +1,6 @@
 .idea/
 hooks/src/
+agents/opencode/plugin.ts
 tsconfig.json
 bun.lock
 *.lock

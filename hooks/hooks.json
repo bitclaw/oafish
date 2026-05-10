@@ -1,0 +1,38 @@
+{
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${CODEX_PLUGIN_ROOT}/hooks/dist/activate.js\"",
+						"timeout": 5,
+						"statusMessage": "Loading oafish mode..."
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${CODEX_PLUGIN_ROOT}/hooks/dist/tracker.js\"",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "node \"${CODEX_PLUGIN_ROOT}/hooks/dist/compress.js\"",
+						"timeout": 5
+					}
+				]
+			}
+		]
+	}
+}
