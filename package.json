@@ -1,6 +1,6 @@
 {
 	"name": "oafish",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"description": "Output compression for AI coding agents",
 	"type": "module",
 	"main": "./agents/opencode/dist/plugin.js",
