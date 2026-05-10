@@ -68,6 +68,54 @@ All checks must pass (`make ci`) before opening a PR.
 
 ---
 
+## Publishing to npm
+
+### Rules
+
+- **Never** run `npm publish` directly — always use the publish scripts which build, bump, tag, and push atomically.
+- **Never** publish from an unclean working tree — commit or stash first.
+- Choose the bump type deliberately before running:
+  - `patch` — bug fixes, docs, tooling (0.3.0 → 0.3.1)
+  - `minor` — new features, new agent support (0.3.0 → 0.4.0)
+  - `major` — breaking changes to plugin API or install format (0.3.0 → 1.0.0)
+
+### Workflow
+
+```bash
+# 1. Verify auth
+npm whoami
+
+# 2. Confirm current version
+node -p "require('./package.json').version"
+
+# 3. Run the appropriate script
+bun run publish:patch   # bug fix
+bun run publish:minor   # new feature
+bun run publish:major   # breaking change
+```
+
+Each script runs in order: `npm whoami` → `bun run build` → `npm version <type>` → `git push --follow-tags` → `npm publish --access public`. If any step fails, the chain stops before the next destructive action.
+
+### If auth fails (npm 404 error)
+
+npm returns 404, not 401, for expired tokens. Fix:
+
+```bash
+npm login
+npm whoami   # verify
+```
+
+### If you accidentally bumped the wrong version
+
+The version bump is already committed and pushed. Options:
+
+1. **Ship it** — publish the accidental version as-is, then immediately publish a corrective version with the right bump type.
+2. **Yank it** — `npm deprecate oafish@<version> "published in error"`. Does not remove from registry but warns installers. Then publish the correct version.
+
+npm does not allow unpublishing packages older than 72 hours. Don't try to revert the git tag — leave it and move forward.
+
+---
+
 ## PR guidelines
 
 - One focused change per PR.

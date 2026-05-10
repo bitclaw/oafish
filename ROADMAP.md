@@ -28,7 +28,7 @@
 - [x] **Versioned publish scripts** — `bun run publish:patch/minor/major` bumps version, runs build, pushes tag, publishes; auth-gated with `npm whoami`
 - [ ] **Better Cline detection** — current detection relies on extension directory scan; use Cline config file if available
 
-## v0.3 — next (easiest wins first, then differentiation, then moat)
+## v0.3 — current (easiest wins first, then differentiation, then moat)
 
 ### Quick wins — next session
 
