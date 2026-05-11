@@ -75,6 +75,8 @@ with open(path, "w") as f:
 EOF
   fi
 
+  rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.active"
+
   ok "Removed dev plugin. Restart Claude Code."
   exit 0
 }
