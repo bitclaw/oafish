@@ -76,6 +76,7 @@ EOF
   fi
 
   rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.active"
+  printf 'off' > "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.off"
 
   ok "Removed dev plugin. Restart Claude Code."
   exit 0
@@ -144,6 +145,8 @@ with open(path, "w") as f:
     json.dump(data, f, indent=4)
     f.write("\n")
 EOF
+
+rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/oafish/.off"
 
 ok "Registered in installed_plugins.json"
 
