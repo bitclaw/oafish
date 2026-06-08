@@ -1,7 +1,7 @@
 ---
 name: oafish-commit
 description: >
-  Commit message generator from current branch diff. Output text only — never
+  Commit message generator from current branch diff. Output text only - never
   runs git commit or git push. Use when user says "write a commit", "commit
   message", "generate commit", "/commit", or invokes /oafish-commit.
 ---
@@ -10,7 +10,7 @@ Generate commit message from current branch changes. Output text only.
 
 ## Steps
 
-1. Run `git diff main...HEAD` — see all branch changes. Empty → fall back to `git diff --cached`, then `git diff`.
+1. Run `git diff main...HEAD` - see all branch changes. Empty → fall back to `git diff --cached`, then `git diff`.
 2. Analyze diff. Draft message using Seven Rules below.
 3. Output in fenced code block.
 
@@ -20,7 +20,7 @@ Generate commit message from current branch changes. Output text only.
 2. Limit subject to 50 characters
 3. Capitalize the subject line
 4. Do not end subject line with a period
-5. Imperative mood: "Add", "Fix", "Remove" — not "Added", "Fixes", "Removed"
+5. Imperative mood: "Add", "Fix", "Remove" - not "Added", "Fixes", "Removed"
 6. Wrap body at 72 characters
 7. Body explains *what* and *why*, not how
 
@@ -31,26 +31,26 @@ Prefix subject with `type: ` when it adds signal not obvious from the subject al
 Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
 
 Use it: `feat: Add profile endpoint for mobile client`
-Skip it: `Update README` — type is obvious, prefix is noise
+Skip it: `Update README` - type is obvious, prefix is noise
 
 ## Additional Rules
 
-- Be concise — no repetition or verbosity
+- Be concise - no repetition or verbosity
 - Reflect only work done on current branch
 - Bullets in body: `-` not `*`
 - Issue/PR refs at end of body: `Closes #42`, `Refs #17`
-- Output commit message text only — never run git commit or push
+- Output commit message text only - never run git commit or push
 
 ## What NEVER goes in
 
 - "Generated with Claude Code", "Co-Authored-By: Claude", or any AI/tool attribution
 - Any tool or agent name (opencode, Cursor, Windsurf, Cline, Copilot, Gemini, etc.)
-- "This commit does X", "I", "we", "now", "currently" — diff says what
+- "This commit does X", "I", "we", "now", "currently" - diff says what
 - Emoji (unless project already uses them)
 
 ## Auto-Clarity
 
-Always include body for: breaking changes, security fixes, data migrations, reverts. Never compress these into subject-only — future debuggers need the context.
+Always include body for: breaking changes, security fixes, data migrations, reverts. Never compress these into subject-only - future debuggers need the context.
 
 ## Examples
 

@@ -9,13 +9,13 @@ description: >
 ## When to activate
 
 Explicit user request only. Never auto-trigger.
-**Claude Code only** — requires the `Task` tool. Not available in opencode or file-based agents.
+**Claude Code only** - requires the `Task` tool. Not available in opencode or file-based agents.
 
 ## Roles
 
-- **Investigator** — read-only. Locates root cause, relevant symbols, line numbers.
-- **Builder** — writes the implementation. Code only, no prose.
-- **Reviewer** — checks correctness, security, edge cases. Verdict: ship / block / minor-fixes.
+- **Investigator** - read-only. Locates root cause, relevant symbols, line numbers.
+- **Builder** - writes the implementation. Code only, no prose.
+- **Reviewer** - checks correctness, security, edge cases. Verdict: ship / block / minor-fixes.
 
 ## Procedure
 
@@ -31,11 +31,11 @@ Fill `[TASK]` and `[FILES]` from context before sending.
 
 ### Investigator
 ```
-OAFISH ULTRA ACTIVE. Role: investigator. Read-only — do not write files.
+OAFISH ULTRA ACTIVE. Role: investigator. Read-only - do not write files.
 Task: [TASK]
 Relevant files (if known): [FILES]
 Find: root cause / required information.
-Output format: compressed bullets only — symbol names, line numbers, key facts. No prose.
+Output format: compressed bullets only - symbol names, line numbers, key facts. No prose.
 ```
 
 ### Builder
@@ -60,5 +60,5 @@ Output format: bullets with severity (bug / risk / nit) + final verdict on last 
 
 - Subagents do **not** write files. Builder output is text only until user confirms.
 - Subagents never spawn further subagents.
-- If task requires >2 files changed, warn user before launching crew — crew is best for focused changes.
+- If task requires >2 files changed, warn user before launching crew - crew is best for focused changes.
 - Reviewer verdict of `block` means crew output is NOT applied without user re-review.

@@ -43,7 +43,7 @@ export function getDefaultMode(): Mode {
 			return cfg.defaultMode.toLowerCase() as Mode;
 		}
 	} catch {
-		// no config file — fall through
+		// no config file - fall through
 	}
 
 	return "full";
@@ -119,7 +119,7 @@ export function safeWriteFlag(flagPath: string, content: string): void {
 		}
 		fs.renameSync(tempPath, realFlagPath);
 	} catch {
-		// silent fail — flag is best-effort
+		// silent fail - flag is best-effort
 	}
 }
 

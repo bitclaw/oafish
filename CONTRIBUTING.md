@@ -8,9 +8,9 @@
 | [uv](https://docs.astral.sh/uv/) | latest | Python package manager for benchmarks |
 | Python | ≥3.14.4 | benchmark script |
 
-uv manages Python automatically — `uv run` will download 3.14.4 if not present.
+uv manages Python automatically - `uv run` will download 3.14.4 if not present.
 
-Benchmarks require `ANTHROPIC_API_KEY` — set via `export` or `.env.local` in the project root.
+Benchmarks require `ANTHROPIC_API_KEY` - set via `export` or `.env.local` in the project root.
 
 ---
 
@@ -42,7 +42,7 @@ Start a new Claude Code session. You should see `OAFISH MODE ACTIVE` in the sess
 ### 4. Iterating
 
 - **Hook changes** (`hooks/src/*.ts`): run `bun run build`, restart the Claude Code session.
-- **Skill changes** (`skills/*/SKILL.md`): restart the Claude Code session only — no build needed.
+- **Skill changes** (`skills/*/SKILL.md`): restart the Claude Code session only - no build needed.
 
 ### Uninstall dev plugin
 
@@ -72,12 +72,12 @@ All checks must pass (`make ci`) before opening a PR.
 
 ### Rules
 
-- **Never** run `npm publish` directly — always use the publish scripts which build, bump, tag, and push atomically.
-- **Never** publish from an unclean working tree — commit or stash first.
+- **Never** run `npm publish` directly - always use the publish scripts which build, bump, tag, and push atomically.
+- **Never** publish from an unclean working tree - commit or stash first.
 - Choose the bump type deliberately before running:
-  - `patch` — bug fixes, docs, tooling (0.3.0 → 0.3.1)
-  - `minor` — new features, new agent support (0.3.0 → 0.4.0)
-  - `major` — breaking changes to plugin API or install format (0.3.0 → 1.0.0)
+  - `patch` - bug fixes, docs, tooling (0.3.0 → 0.3.1)
+  - `minor` - new features, new agent support (0.3.0 → 0.4.0)
+  - `major` - breaking changes to plugin API or install format (0.3.0 → 1.0.0)
 
 ### Workflow
 
@@ -109,10 +109,10 @@ npm whoami   # verify
 
 The version bump is already committed and pushed. Options:
 
-1. **Ship it** — publish the accidental version as-is, then immediately publish a corrective version with the right bump type.
-2. **Yank it** — `npm deprecate oafish@<version> "published in error"`. Does not remove from registry but warns installers. Then publish the correct version.
+1. **Ship it** - publish the accidental version as-is, then immediately publish a corrective version with the right bump type.
+2. **Yank it** - `npm deprecate oafish@<version> "published in error"`. Does not remove from registry but warns installers. Then publish the correct version.
 
-npm does not allow unpublishing packages older than 72 hours. Don't try to revert the git tag — leave it and move forward.
+npm does not allow unpublishing packages older than 72 hours. Don't try to revert the git tag - leave it and move forward.
 
 ---
 
@@ -130,7 +130,7 @@ npm does not allow unpublishing packages older than 72 hours. Don't try to rever
 | Path | Purpose |
 |------|---------|
 | `hooks/src/` | TypeScript source for Claude Code hooks |
-| `hooks/dist/` | Compiled JS (committed — zero-dep install) |
+| `hooks/dist/` | Compiled JS (committed - zero-dep install) |
 | `hooks/statusline` | Bash script for Claude Code statusline badge |
 | `skills/oafish/` | Main compression skill (lite/full/ultra) |
 | `skills/oafish-commit/` | Commit message generator |
@@ -140,11 +140,11 @@ npm does not allow unpublishing packages older than 72 hours. Don't try to rever
 | `skills/oafish-index/` | CLAUDE.md indexer |
 | `skills/oafish-crew/` | Parallel subagents (investigator/builder/reviewer) |
 | `rules/oafish.md` | Rules file for file-based agents (Cursor, Windsurf, etc.) |
-| `.claude-plugin/plugin.json` | Plugin manifest — hooks + skills registry |
+| `.claude-plugin/plugin.json` | Plugin manifest - hooks + skills registry |
 
 ### Single source of truth
 
-Each skill's `SKILL.md` is the only file to edit for behavior changes. The SessionStart hook reads it at runtime — no duplication, no sync step needed.
+Each skill's `SKILL.md` is the only file to edit for behavior changes. The SessionStart hook reads it at runtime - no duplication, no sync step needed.
 
 ---
 

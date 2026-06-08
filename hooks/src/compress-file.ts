@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// oafish compress — CLI tool to compress markdown/text files before feeding to context
+// oafish compress - CLI tool to compress markdown/text files before feeding to context
 // Usage: node hooks/dist/compress-file.js <file>
 
 import fs from "node:fs";
@@ -188,7 +188,7 @@ async function compressFile(filePath: string): Promise<void> {
 
 	if (fs.existsSync(backupPath)) {
 		process.stderr.write(
-			`oafish: backup already exists: ${backupPath} — delete it first\n`,
+			`oafish: backup already exists: ${backupPath} - delete it first\n`,
 		);
 		process.exit(1);
 	}

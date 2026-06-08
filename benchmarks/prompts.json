@@ -27,7 +27,7 @@
   {
     "id": "race-condition",
     "category": "debugging",
-    "prompt": "I have a race condition in my Node.js code where two concurrent requests both read a counter, increment it, and write it back — sometimes incrementing by 1 instead of 2. How do I fix this without a database lock?"
+    "prompt": "I have a race condition in my Node.js code where two concurrent requests both read a counter, increment it, and write it back - sometimes incrementing by 1 instead of 2. How do I fix this without a database lock?"
   },
   {
     "id": "git-rebase-merge",

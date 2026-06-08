@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// oafish — UserPromptSubmit hook
+// oafish - UserPromptSubmit hook
 // Tracks mode switches, natural-language activation/deactivation, per-turn reinforcement
 
 import fs from "node:fs";
@@ -129,7 +129,7 @@ process.stdin.on("end", () => {
 			}
 		}
 
-		// Per-turn reinforcement — keeps oafish active when other plugins inject competing instructions
+		// Per-turn reinforcement - keeps oafish active when other plugins inject competing instructions
 		const activeMode = readFlag(flagPath);
 		if (activeMode && activeMode !== "off") {
 			const contextWarn = monitorContext(

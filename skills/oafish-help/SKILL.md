@@ -6,7 +6,7 @@ description: >
   "oafish help", "what oafish commands", "how do I use oafish".
 ---
 
-Display this reference card when invoked. One-shot — do NOT change mode, write flag files, or persist anything. Output in oafish style.
+Display this reference card when invoked. One-shot - do NOT change mode, write flag files, or persist anything. Output in oafish style.
 
 ## Modes
 
@@ -43,7 +43,7 @@ Backs up original to `<file>.original.md`. Saves ~35-46% input tokens.
 
 Say "stop oafish" or "normal mode". Resume anytime with `/oafish`.
 
-Deactivation persists across sessions — oafish stays off until you re-activate.
+Deactivation persists across sessions - oafish stays off until you re-activate.
 
 ## Configure Default Mode
 

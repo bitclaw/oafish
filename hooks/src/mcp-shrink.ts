@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// oafish — MCP shrink server
+// oafish - MCP shrink server
 // Stdio JSON-RPC proxy that wraps any upstream MCP server and compresses
 // tool/prompt/resource description fields before they hit the context window.
-// Zero API calls — regex-only compression, ~1ms per tools/list response.
+// Zero API calls - regex-only compression, ~1ms per tools/list response.
 //
 // Usage:
 //   node mcp-shrink.js -- <upstream-cmd> [args...]
@@ -27,7 +27,7 @@ const SHRINK_FIELDS = new Set(
 const MAX_DESC = 120;
 const DEBUG = process.env.OAFISH_SHRINK_DEBUG === "1";
 
-// ── protected patterns — never touch these segments ──────────────────────────
+// ── protected patterns - never touch these segments ──────────────────────────
 
 const PROTECTED: RegExp[] = [
 	/```[\s\S]*?```/g,
@@ -36,7 +36,7 @@ const PROTECTED: RegExp[] = [
 	/\b[\w.-]+[/\\][\w./\\-]+/g,
 ];
 
-//  = Unicode private-use area — safe sentinel, never appears in real MCP descriptions
+//  = Unicode private-use area - safe sentinel, never appears in real MCP descriptions
 const SENTINEL_PREFIX = "P";
 const SENTINEL_SUFFIX = "";
 const SENTINEL_RE = /P(\d+)/g;
@@ -175,7 +175,7 @@ upstream.stdout.on("data", (chunk: Buffer) => {
 			const processed = processMessage(msg);
 			process.stdout.write(`${JSON.stringify(processed)}\n`);
 		} catch {
-			// Not valid JSON — pass through raw (e.g. HTTP headers in SSE mode)
+			// Not valid JSON - pass through raw (e.g. HTTP headers in SSE mode)
 			process.stdout.write(`${line}\n`);
 		}
 	}

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// oafish — SessionStart hook
+// oafish - SessionStart hook
 // 1. Writes active mode flag
 // 2. Injects oafish ruleset as session context
 // 3. Nudges statusline setup if missing
@@ -40,7 +40,7 @@ if (offFlag === "off") {
 
 safeWriteFlag(flagPath, mode);
 
-// Read SKILL.md — single source of truth.
+// Read SKILL.md - single source of truth.
 // Plugin installs: __dirname = <plugin_root>/hooks/dist/, SKILL.md at <plugin_root>/skills/oafish/SKILL.md
 let skillContent = "";
 try {
@@ -49,7 +49,7 @@ try {
 		"utf8",
 	);
 } catch {
-	/* standalone — use fallback */
+	/* standalone - use fallback */
 }
 
 let output: string;
@@ -73,10 +73,10 @@ if (skillContent) {
 		return acc;
 	}, []);
 
-	output = `OAFISH MODE ACTIVE — level: ${mode}\n\n${filtered.join("\n")}`;
+	output = `OAFISH MODE ACTIVE - level: ${mode}\n\n${filtered.join("\n")}`;
 } else {
 	output =
-		`OAFISH MODE ACTIVE — level: ${mode}\n\n` +
+		`OAFISH MODE ACTIVE - level: ${mode}\n\n` +
 		`Respond concise. Drop fluff. Keep full technical accuracy.\n\n` +
 		`Drop: articles, filler (just/really/basically/simply), pleasantries, hedging. ` +
 		`Fragments OK. Short synonyms. Technical terms exact. Code unchanged.\n\n` +

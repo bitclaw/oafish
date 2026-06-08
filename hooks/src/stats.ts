@@ -1,4 +1,4 @@
-// oafish stats — reads Claude Code session JSONL and reports token savings
+// oafish stats - reads Claude Code session JSONL and reports token savings
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -10,7 +10,7 @@ const COMPRESSION_RATIO: Partial<Record<string, number>> = {
 	lite: 0.35,
 };
 
-// Output token price per million (USD) — matched by model prefix
+// Output token price per million (USD) - matched by model prefix
 const OUTPUT_PRICE_PER_M: Array<[RegExp, number]> = [
 	[/claude-opus-4/, 15.0],
 	[/claude-sonnet-4/, 3.0],
@@ -163,12 +163,12 @@ export function getStats(opts: StatsOptions): string {
 
 	if (share) {
 		if (!savings)
-			return `oafish: ${metrics.outputTokens.toLocaleString()} output tokens — ${metrics.turns} turns`;
+			return `oafish: ${metrics.outputTokens.toLocaleString()} output tokens - ${metrics.turns} turns`;
 		const price = pricePerMillion(metrics.model);
 		const usdPart = price
 			? ` (~$${((savings.savedTokens / 1_000_000) * price).toFixed(4)})`
 			: "";
-		return `Saved ${formatNum(savings.savedTokens)} output tokens${usdPart} across ${metrics.turns} turns this session — oafish`;
+		return `Saved ${formatNum(savings.savedTokens)} output tokens${usdPart} across ${metrics.turns} turns this session - oafish`;
 	}
 
 	const lines: string[] = [
@@ -236,7 +236,7 @@ export function getStats(opts: StatsOptions): string {
 function getLifetimeStats(_mode: string): string {
 	const histPath = getHistoryPath();
 	if (!fs.existsSync(histPath)) {
-		return "oafish: no history yet — run /oafish stats in a session first";
+		return "oafish: no history yet - run /oafish stats in a session first";
 	}
 
 	const raw = fs.readFileSync(histPath, "utf8");
@@ -256,7 +256,7 @@ function getLifetimeStats(_mode: string): string {
 	const totalUsd = entries.reduce((s, e) => s + e.est_saved_usd, 0);
 
 	return [
-		"Oafish Stats — Lifetime",
+		"Oafish Stats - Lifetime",
 		SEP,
 		`Sessions: ${entries.length}`,
 		SEP,

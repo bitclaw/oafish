@@ -28,7 +28,7 @@ Target: ≤200 lines for the master index, ≤150 lines per subdocument.
 ## Procedure
 
 1. Read `CLAUDE.md`. Count lines.
-   - If ≤200 lines: report "CLAUDE.md is N lines — within budget. No indexing needed."
+   - If ≤200 lines: report "CLAUDE.md is N lines - within budget. No indexing needed."
    - If >200 lines: continue.
 
 2. Identify all `##` sections. Group into domain buckets based on content topic.
@@ -49,8 +49,8 @@ Target: ≤200 lines for the master index, ≤150 lines per subdocument.
 
 ## Constraints
 
-- Never lose content — every line in the original must appear somewhere in the output.
+- Never lose content - every line in the original must appear somewhere in the output.
 - Never compress code blocks, URLs, file paths, or commands.
 - Subdocuments are standalone readable files, not just fragments.
 - Do not create more than 7 subdocument files.
-- If the entire CLAUDE.md fits in one domain, do not split — just compress with `/oafish compress`.
+- If the entire CLAUDE.md fits in one domain, do not split - just compress with `/oafish compress`.

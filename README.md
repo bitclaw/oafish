@@ -24,7 +24,7 @@ Detects which agents are installed and wires up each one automatically.
 
 | Agent | Install method | Auto-activates |
 |---|---|---|
-| Claude Code | Plugin (hooks + skill) | Yes — every session |
+| Claude Code | Plugin (hooks + skill) | Yes - every session |
 | Cursor | `.cursor/rules/oafish.md` | Yes |
 | Windsurf | `.windsurf/rules/oafish.md` | Yes |
 | Cline | `.clinerules/oafish.md` | Yes |
@@ -41,8 +41,8 @@ Or copy `rules/oafish.md` manually into any agent's rules directory.
 
 ```
 /oafish           activate (full mode)
-/oafish lite      professional tight — keeps full sentences
-/oafish ultra     maximum compression — arrows, abbreviations
+/oafish lite      professional tight - keeps full sentences
+/oafish ultra     maximum compression - arrows, abbreviations
 stop oafish       deactivate
 normal mode      deactivate
 ```
@@ -72,18 +72,18 @@ Auto-clarity: oafish suspends for security warnings, destructive operations, and
 
 For Claude Code, oafish installs three hooks:
 
-- **SessionStart** (`activate`) — injects compression rules at session open, writes active mode to `~/.config/oafish/.active`
-- **UserPromptSubmit** (`tracker`) — handles `/oafish` commands, reinforces mode each turn
-- **PostToolUse** (`compress`) — digests verbose `Read`/`Bash`/MCP outputs before they fill context
+- **SessionStart** (`activate`) - injects compression rules at session open, writes active mode to `~/.config/oafish/.active`
+- **UserPromptSubmit** (`tracker`) - handles `/oafish` commands, reinforces mode each turn
+- **PostToolUse** (`compress`) - digests verbose `Read`/`Bash`/MCP outputs before they fill context
 
 The compress hook is the high-leverage part: large file reads and bash output can consume thousands of context tokens per call. oafish intercepts them and injects a terse digest instead:
 
 ```
-[oafish] Read: auth.ts — 312L | ts | fns: login, logout, validateToken, refreshSession
-[oafish] Bash: npm test — 47 passing, 2 failing: auth.test.ts:88, user.test.ts:112
+[oafish] Read: auth.ts - 312L | ts | fns: login, logout, validateToken, refreshSession
+[oafish] Bash: npm test - 47 passing, 2 failing: auth.test.ts:88, user.test.ts:112
 ```
 
-For file-based agents (Cursor, Windsurf, etc.), the rules file is written directly — no hooks, same compression behavior via prompt rules.
+For file-based agents (Cursor, Windsurf, etc.), the rules file is written directly - no hooks, same compression behavior via prompt rules.
 
 ---
 

@@ -2,19 +2,19 @@
 name: oafish-stats
 description: >
   Reports token savings for the current session. Reads Claude Code session
-  JSONL directly — no estimates, real numbers. Delivered by the
+  JSONL directly - no estimates, real numbers. Delivered by the
   UserPromptSubmit hook; Claude never sees this prompt.
   Use when user says "oafish stats", "how many tokens saved", or invokes
   /oafish stats. Flags: --all (lifetime), --share (tweetable one-liner).
 ---
 
-Token savings report for current session. Hook-delivered — never reaches Claude.
+Token savings report for current session. Hook-delivered - never reaches Claude.
 
 ## Usage
 
-- `/oafish stats` — current session
-- `/oafish stats --all` — lifetime across all sessions
-- `/oafish stats --share` — one-liner summary
+- `/oafish stats` - current session
+- `/oafish stats --all` - lifetime across all sessions
+- `/oafish stats --share` - one-liner summary
 
 ## Output
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// oafish — PostToolUse hook
+// oafish - PostToolUse hook
 // Compresses verbose tool outputs to keep context window lean.
 // For MCP tools: replaces output via updatedMCPToolOutput.
 // For all tools: injects an oafish digest via additionalContext.
@@ -73,7 +73,7 @@ function digestCode(text: string, filename: string): string {
 	if (ext) parts.push(ext);
 	if (fns.length) parts.push(`fns: ${fns.slice(0, 5).join(", ")}`);
 
-	return `[oafish] Read: ${filename} — ${parts.join(" | ")}`;
+	return `[oafish] Read: ${filename} - ${parts.join(" | ")}`;
 }
 
 // Digest bash output
@@ -104,7 +104,7 @@ function digestBash(response: unknown, _cmd: string): string {
 	return `[oafish] Bash(${lines.length}L): ${summary}${lines.length > 1 ? " …" : ""}`;
 }
 
-// Compress MCP JSON output — strip whitespace, keep key scalar values
+// Compress MCP JSON output - strip whitespace, keep key scalar values
 function compressMcp(response: unknown): string {
 	try {
 		const text =

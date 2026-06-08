@@ -31,14 +31,14 @@ function loadRules(mode: string): string {
 			acc.push(line);
 			return acc;
 		}, []);
-		return `OAFISH MODE ACTIVE — level: ${mode}\n\n${filtered.join("\n")}`;
+		return `OAFISH MODE ACTIVE - level: ${mode}\n\n${filtered.join("\n")}`;
 	} catch {
 		// fall back to rules/oafish.md
 	}
 	try {
-		return `OAFISH MODE ACTIVE — level: ${mode}\n\n${fs.readFileSync(RULES_PATH, "utf8")}`;
+		return `OAFISH MODE ACTIVE - level: ${mode}\n\n${fs.readFileSync(RULES_PATH, "utf8")}`;
 	} catch {
-		return `OAFISH MODE ACTIVE — level: ${mode}\n\nRespond concise. Drop fluff. Keep full technical accuracy.`;
+		return `OAFISH MODE ACTIVE - level: ${mode}\n\nRespond concise. Drop fluff. Keep full technical accuracy.`;
 	}
 }
 

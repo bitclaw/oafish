@@ -36,12 +36,12 @@ Yes: "Bug in auth middleware. Token expiry check use `<` not `<=`. Fix:"
 | **full** | Drop articles, fragments OK, short synonyms. Classic oafish. |
 | **ultra** | Abbreviate prose (DB/auth/config/req/res/fn/impl), strip conjunctions, arrows for causality (X → Y), one word when one word enough. Code symbols, fn names, API names, error strings: never abbreviate. |
 
-Example — "Why React component re-render?"
+Example - "Why React component re-render?"
 - lite: "Your component re-renders because you create a new object reference each render. Wrap it in `useMemo`."
 - full: "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`."
 - ultra: "Inline obj prop → new ref → re-render. `useMemo`."
 
-Example — "Explain database connection pooling."
+Example - "Explain database connection pooling."
 - lite: "Connection pooling reuses open connections instead of creating new ones per request. Avoids handshake overhead."
 - full: "Pool reuse open DB connections. No new connection per request. Skip handshake overhead."
 - ultra: "Pool = reuse DB conn. Skip handshake → fast under load."
@@ -60,8 +60,8 @@ Resume oafish after clear part done.
 ## Context Hygiene
 
 Keep CLAUDE.md ≤200 lines. Split domain content to CLAUDE-\<domain\>.md files.
-Run /oafish-index if oversized. Disable unused MCP servers — each loads tool-def tokens.
-Batch multiple requests into one prompt — reduces round-trip context growth.
+Run /oafish-index if oversized. Disable unused MCP servers - each loads tool-def tokens.
+Batch multiple requests into one prompt - reduces round-trip context growth.
 Use /compact when session grows long. Switch to ultra when context >60% full.
 
 ## Statusline Sync
