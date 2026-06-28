@@ -1,28 +1,28 @@
 {
-	"name": "oafish",
-	"version": "0.2.0",
-	"description": "Output compression for AI coding agents",
-	"type": "module",
-	"scripts": {
-		"build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts hooks/src/compress-file.ts hooks/src/mcp-shrink.ts --outdir hooks/dist --target node --format cjs",
-		"dev:activate": "bun run hooks/src/activate.ts",
-		"dev:tracker": "bun run hooks/src/tracker.ts",
-		"dev:compress": "bun run hooks/src/compress.ts",
-		"dev:compress-file": "bun run hooks/src/compress-file.ts",
-		"dev:stats": "bun run hooks/src/stats.ts",
-		"typecheck": "tsc --noEmit",
-		"lint": "biome check",
-		"fix": "biome check --write",
-		"publish:patch": "npm whoami && npm run build && npm version patch && git push --follow-tags && npm publish --access public",
-		"publish:minor": "npm whoami && npm run build && npm version minor && git push --follow-tags && npm publish --access public",
-		"publish:major": "npm whoami && npm run build && npm version major && git push --follow-tags && npm publish --access public"
-	},
-	"dependencies": {
-		"@anthropic-ai/sdk": "^0.95.0"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.4.15",
-		"@types/bun": "latest",
-		"typescript": "^5.0.0"
-	}
+  "name": "oafish",
+  "version": "0.2.0",
+  "description": "Output compression for AI coding agents",
+  "type": "module",
+  "scripts": {
+    "build": "bun build hooks/src/activate.ts hooks/src/tracker.ts hooks/src/compress.ts hooks/src/compress-file.ts hooks/src/mcp-shrink.ts --outdir hooks/dist --target node --format cjs",
+    "dev:activate": "bun run hooks/src/activate.ts",
+    "dev:tracker": "bun run hooks/src/tracker.ts",
+    "dev:compress": "bun run hooks/src/compress.ts",
+    "dev:compress-file": "bun run hooks/src/compress-file.ts",
+    "dev:stats": "bun run hooks/src/stats.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check",
+    "fix": "biome check --write",
+    "publish:patch": "npm whoami && npm run build && npm version patch && git push --follow-tags && npm publish --access public",
+    "publish:minor": "npm whoami && npm run build && npm version minor && git push --follow-tags && npm publish --access public",
+    "publish:major": "npm whoami && npm run build && npm version major && git push --follow-tags && npm publish --access public"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.95.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@types/bun": "latest",
+    "typescript": "5.9.3"
+  }
 }
